@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
     public int walkSpeed = 15;
     public int sensitivity = 10;
     public int bombSpawnDistance = 1;
-
+    
     public GameObject bombPrefab;
 
     private CharacterController characterController;
@@ -15,6 +15,8 @@ public class PlayerController : MonoBehaviour
     private InputAction moveAction;
     private InputAction lookAction;
     private InputAction placeBombAction;
+    
+    
 
     void Start()
     {
