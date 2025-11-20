@@ -148,8 +148,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a88a54dee356880ba5cd7cd8ddb3e63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameState
-  DestructibleWallPrefab: {fileID: 0}
-  NonDestructibleWallPrefab: {fileID: 0}
+  destructibleWallPrefab: {fileID: 8235394160929668786, guid: b44048c773a26224e9a295e569e5829c, type: 3}
+  nonDestructibleWallPrefab: {fileID: 2364436100679826612, guid: c81e32832437d714fb4157d37a982a71, type: 3}
 --- !u!4 &50882397
 Transform:
   m_ObjectHideFlags: 0
