@@ -1,123 +1,92 @@
 using System.Collections.Generic;
+using System.Linq;
 using State;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 public class GameState : MonoBehaviour
 {
     public static GameState Instance { get; private set; }
-
-    public Wall[,] WallMap { get; private set; }
+    public GridTile[,] WallMap { get; private set; }
     public List<PlayerSpawn> PlayerSpawns { get; private set; }
-    public GameObject destructibleWallPrefab;
-    public GameObject nonDestructibleWallPrefab;
-
-    private int _gridTileWidth = 2;
-    private int _gameWidthInTiles;
-    private int _gameHeightInTiles;
+    [SerializeField] private float cellSize = 2f;
+    public float CellSize => cellSize;
+    public int ArenaWidth { get; set; }
+    public int ArenaHeight { get; set; }
 
     private void Awake()
     {
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
+            return;
         }
-        else
-        {
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
-    }
 
-    void Start()
-    {
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+        
         Load(@"
-XXXXX
-XP  X
-X XDX
-XDD X
-XXXXX
-"
-            , 5, 5);
+            XXXXX
+            XPOOX
+            XOXWX
+            XWWOX
+            XXXXX
+        ");
     }
 
-    private void Load(string mapData, int width, int height)
+    private void Load(string mapData)
     {
-        _gameHeightInTiles = height;
-        _gameWidthInTiles = width;
-        WallMap = new Wall[height, width];
-        PlayerSpawns = new List<PlayerSpawn>();
+        var lines = mapData.Split('\n');
+        var validLines = lines
+            .Select(l => l.Trim())
+            .Where(l => !string.IsNullOrEmpty(l))
+            .ToList();
 
-        string[] lines = mapData.Split('\n');
-        var validLines = new List<string>();
-
-        foreach (string line in lines)
+        ArenaHeight = validLines.Count;
+        ArenaWidth = validLines[0].Length;
+        
+        if (validLines.Any(l => l.Length != ArenaWidth))
         {
-            string trimmedLine = line.Trim();
-            if (!string.IsNullOrEmpty(trimmedLine))
-            {
-                validLines.Add(trimmedLine);
-            }
+            Debug.LogError("Map data is inconsistent");
+            return;
         }
-
-        int y = 0;
-        int lineIndex = 0;
-
-        while (lineIndex < validLines.Count && y < height)
+        
+        WallMap = new GridTile[ArenaWidth, ArenaHeight];
+        PlayerSpawns = new List<PlayerSpawn>();
+        
+        for (var y = 0; y < ArenaHeight; y++)
         {
-            string currentLine = validLines[lineIndex];
-            int x = 0;
-            int charIndex = 0;
-
-            while (charIndex < currentLine.Length && x < width)
+            var line = validLines[y];
+            
+            for (var x = 0; x < ArenaWidth; x++)
             {
-                char currentChar = currentLine[charIndex];
+                var c = line[x];
 
-                switch (currentChar)
+                switch (c)
                 {
                     case 'X':
+                        WallMap[x, y] = new GridTile(WallType.WallIndestructible);
+                        break;
 
-                        var wallGo = Instantiate(nonDestructibleWallPrefab,
-                            new Vector3(x * _gridTileWidth, 0, y * _gridTileWidth), Quaternion.identity);
-                        WallMap[y, x] = new Wall(wallGo, false);
+                    case 'W':
+                        WallMap[x, y] = new GridTile(WallType.WallDestructible);
                         break;
 
                     case 'P':
                         PlayerSpawns.Add(new PlayerSpawn(x, y));
-                        //todo spawn player and track GO
-                        GameObject.FindGameObjectWithTag("Player").transform.position =
-                            new Vector3(x * _gridTileWidth, 1, y * _gridTileWidth);
+                        WallMap[x, y] = new GridTile(WallType.Empty);
                         break;
 
-                    case 'D':
-                        var destructibleWallGo = Instantiate(destructibleWallPrefab,
-                            new Vector3(x * _gridTileWidth, 0, y * _gridTileWidth),
-                            Quaternion.identity);
-                        WallMap[y, x] = new Wall(destructibleWallGo, true);
-                        break;
-
+                    case 'O':
                     case ' ':
-
+                        WallMap[x, y] = new GridTile(WallType.Empty);
                         break;
 
                     default:
-                        Debug.LogWarning($"Neznámy znak '{currentChar}' na pozícii [{x}, {y}]");
+                        Debug.LogWarning($"Neznámy znak '{c}' na pozícii [{x},{y}]");
+                        WallMap[x, y] = new GridTile(WallType.Empty);
                         break;
                 }
-
-                charIndex++;
-                x++;
             }
-
-            lineIndex++;
-            y++;
         }
-
-        // todo generate GO from map data
-    }
-
-
-    void Update()
-    {
     }
 }

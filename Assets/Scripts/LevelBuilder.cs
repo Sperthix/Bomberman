@@ -1,0 +1,125 @@
+using UnityEngine;
+using State;
+
+public class LevelBuilder : MonoBehaviour
+{
+    [Header("Prefabs")]
+    [SerializeField] private GameObject floorPrefab;
+    [SerializeField] private GameObject wallIndestructiblePrefab;
+    [SerializeField] private GameObject wallDestructiblePrefab;
+    [SerializeField] private Transform playerTransform;
+
+    private GameState state;
+
+    private void Start()
+    {
+        state = GameState.Instance;
+
+        if (state == null)
+        {
+            Debug.LogError("GameState.Instance not found!");
+            return;
+        }
+
+        BuildLevel();
+    }
+
+    private void BuildLevel()
+    {
+        float cellSize = state.CellSize;
+
+        for (int y = 0; y < state.ArenaHeight; y++)
+        {
+            for (int x = 0; x < state.ArenaWidth; x++)
+            {
+                GridTile tile = state.WallMap[x, y];
+
+                Vector3 worldPos = new Vector3(x * cellSize, 0f, y * cellSize);
+                
+                if (tile.Type is WallType.Empty or WallType.WallDestructible)
+                {
+                    SpawnFloor(worldPos);
+                }
+
+                switch (tile.Type)
+                {
+                    case WallType.WallIndestructible:
+                        SpawnWallIndestructible(worldPos, x, y);
+                        break;
+
+                    case WallType.WallDestructible:
+                        SpawnWallDestructible(worldPos, x, y);
+                        break;
+
+                    case WallType.Empty:
+                        break;
+                }
+            }
+        }
+
+        SpawnPlayer();
+    }
+
+    private void SpawnFloor(Vector3 pos)
+    {
+        if (floorPrefab == null) return;
+        Instantiate(floorPrefab, pos, Quaternion.identity, transform);
+    }
+
+    private void SpawnWallIndestructible(Vector3 pos, int x, int y)
+    {
+        if (wallIndestructiblePrefab == null) return;
+
+        Vector3 p = pos + Vector3.up * 1f;
+        GameObject go = Instantiate(wallIndestructiblePrefab, p, Quaternion.identity, transform);
+        
+        WallBehaviour wb = go.GetComponent<WallBehaviour>() ?? go.GetComponentInChildren<WallBehaviour>();
+        if (wb != null)
+        {
+            wb.Init(x, y, WallType.WallIndestructible);
+        }
+        else
+        {
+            Debug.LogWarning($"Indestructible wall prefab '{go.name}' has no WallBehaviour script");
+        }
+    }
+
+    private void SpawnWallDestructible(Vector3 pos, int x, int y)
+    {
+        if (wallDestructiblePrefab == null) return;
+
+        Vector3 p = pos + Vector3.up * 1f;
+        GameObject go = Instantiate(wallDestructiblePrefab, p, Quaternion.identity, transform);
+
+        WallBehaviour wb = go.GetComponent<WallBehaviour>() ?? go.GetComponentInChildren<WallBehaviour>();
+        if (wb != null)
+        {
+            wb.Init(x, y, WallType.WallDestructible);
+        }
+        else
+        {
+            Debug.LogWarning($"Destructible wall prefab '{go.name}' has no WallBehaviour script");
+        }
+    }
+
+    private void SpawnPlayer()
+    {
+        if (playerTransform == null)
+        {
+            Debug.LogError("PlayerTransform not assigned in LevelBuilder");
+            return;
+        }
+
+        if (state.PlayerSpawns == null || state.PlayerSpawns.Count == 0)
+        {
+            Debug.LogError("No player spawn found in GameState");
+            return;
+        }
+
+        var spawn = state.PlayerSpawns[0];
+        float cellSize = state.CellSize;
+
+        Vector3 pos = new Vector3(spawn.X * cellSize, 1f, spawn.Y * cellSize);
+        playerTransform.position = pos;
+    }
+}
