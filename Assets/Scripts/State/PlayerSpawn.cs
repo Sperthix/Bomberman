@@ -1,16 +1,15 @@
-using UnityEngine;
-
 namespace State
 {
+    [System.Serializable]
     public class PlayerSpawn
     {
-        public PlayerSpawn(int gridX, int gridY)
-        {
-            GridX = gridX;
-            GridY = gridY;
-        }
+        public int X { get; }
+        public int Y { get; }
 
-        public int GridX;
-        public int GridY;
+        public PlayerSpawn(int x, int y)
+        {
+            X = x;
+            Y = y;
+        }
     }
 }
