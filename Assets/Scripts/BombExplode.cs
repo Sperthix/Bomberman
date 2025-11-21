@@ -1,15 +1,22 @@
 using UnityEngine;
+using System.Collections;
 
 public class BombExplode : MonoBehaviour
 {
-    private float fuseTime = 3f;
-    private float radius = 2f;
+    [SerializeField] private float fuseTime = 3f;
+    [SerializeField] private float radius = 2f;
 
-    private void Start()
+    private void OnEnable()
     {
-        Invoke(nameof(Explode), fuseTime);
+        StartCoroutine(FuseCoroutine());
     }
-    
+
+    private IEnumerator FuseCoroutine()
+    {
+        yield return new WaitForSeconds(fuseTime);
+        Explode();
+    }
+
     public void Explode()
     {
         Collider[] hits = Physics.OverlapSphere(transform.position, radius);
@@ -17,14 +24,10 @@ public class BombExplode : MonoBehaviour
         foreach (Collider hit in hits)
         {
             //pridat kontrolu na hit hraca - dostane dmg
-            
-            Destructible destructible = hit.GetComponent<Destructible>();
-            if (destructible != null)
-            {
-                destructible.Destroy();
-            }
+            var wall = hit.GetComponentInParent<WallBehaviour>();
+            wall?.HitByExplosion();
         }
-        
+
         Destroy(gameObject);
     }
 }
