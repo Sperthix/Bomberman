@@ -25,11 +25,13 @@ public class GameState : MonoBehaviour
         DontDestroyOnLoad(gameObject);
         
         Load(@"
-            XXXXX
-            XPOOX
-            XOXWX
-            XWWOX
-            XXXXX
+            XXXXXXX
+            XPOOOWX
+            XOXWXWX
+            XWWOWWX
+            XXXWXXX
+            XWWWWWX
+            XXXXXXX
         ");
     }
 
