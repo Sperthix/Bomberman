@@ -7,6 +7,8 @@ public class GameState : MonoBehaviour
 {
     public static GameState Instance { get; private set; }
     public GridTile[,] WallMap { get; private set; }
+    public WallBehaviour[,] WallObjects { get; private set; }
+
     public List<PlayerSpawn> PlayerSpawns { get; private set; }
     [SerializeField] private float cellSize = 2f;
     public float CellSize => cellSize;
@@ -53,6 +55,7 @@ public class GameState : MonoBehaviour
         }
         
         WallMap = new GridTile[ArenaWidth, ArenaHeight];
+        WallObjects = new WallBehaviour[ArenaWidth, ArenaHeight];
         PlayerSpawns = new List<PlayerSpawn>();
         
         for (var y = 0; y < ArenaHeight; y++)
@@ -89,6 +92,32 @@ public class GameState : MonoBehaviour
                         break;
                 }
             }
+        }
+    }
+    public bool WorldToGrid(Vector3 worldPos, out int gx, out int gy)
+    {
+        gx = Mathf.RoundToInt(worldPos.x / cellSize);
+        gy = Mathf.RoundToInt(worldPos.z / cellSize);
+
+        return gx >= 0 && gx < ArenaWidth &&
+               gy >= 0 && gy < ArenaHeight;
+    }
+
+    public Vector3 GridToWorld(int gx, int gy)
+    {
+        return new Vector3(gx * cellSize, 0f, gy * cellSize);
+    }
+    
+    public void RegisterWall(int x, int y, WallBehaviour wall)
+    {
+        WallObjects[x, y] = wall;
+    }
+
+    public void UnregisterWall(int x, int y, WallBehaviour wall)
+    {
+        if (WallObjects[x, y] == wall)
+        {
+            WallObjects[x, y] = null;
         }
     }
 }
