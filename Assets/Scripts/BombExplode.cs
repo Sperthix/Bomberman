@@ -99,12 +99,10 @@ public class BombExplode : MonoBehaviour
         if (playerGO)
         {
             var playerPos = playerGO.transform.position;
-            if (gs.WorldToGrid(playerPos, out var px, out var py))
+            if (gs.WorldToGrid(playerPos, out var px, out var py) &&
+                affectedTiles.Any(tilePos => tilePos.x == px && tilePos.y == py))
             {
-                if (affectedTiles.Any(tilePos => tilePos.x == px && tilePos.y == py))
-                {
-                    Debug.Log("PLAYER HIT BY EXPLOSION!");
-                }
+                Debug.Log("PLAYER HIT BY EXPLOSION!");
             }
         }
         
