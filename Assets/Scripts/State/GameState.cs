@@ -110,6 +110,11 @@ public class GameState : MonoBehaviour
     
     public void RegisterWall(int x, int y, WallBehaviour wall)
     {
+        if (x < 0 || x >= ArenaWidth || y < 0 || y >= ArenaHeight)
+        {
+            Debug.LogError($"RegisterWall called with invalid coordinates: ({x}, {y})");
+            return;
+        }
         WallObjects[x, y] = wall;
     }
 
