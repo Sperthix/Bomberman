@@ -3,9 +3,9 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    public int walkSpeed = 15;
-    public int sensitivity = 10;
-    public int bombSpawnDistance = 1;
+    public float walkSpeed = 15f;
+    public float sensitivity = 10f;
+    public float bombSpawnDistance = 1f;
     
     public GameObject bombPrefab;
 
@@ -15,8 +15,8 @@ public class PlayerController : MonoBehaviour
     private InputAction moveAction;
     private InputAction lookAction;
     private InputAction placeBombAction;
-    
-    
+
+    private Animator animator;
 
     void Start()
     {
@@ -26,6 +26,12 @@ public class PlayerController : MonoBehaviour
         moveAction = playerInput.actions["Move"];
         lookAction = playerInput.actions["Look"];
         placeBombAction = playerInput.actions["PlaceBomb"];
+        
+        animator = GetComponentInChildren<Animator>();
+        if (animator == null)
+        {
+            Debug.LogError("Animator not found for player");
+        }
         
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -51,6 +57,12 @@ public class PlayerController : MonoBehaviour
         var moveInput = moveAction.ReadValue<Vector2>();
         var moveVector = transform.forward * moveInput.y + transform.right * moveInput.x;
         characterController.Move(moveVector * (Time.deltaTime * walkSpeed));
+        
+        float speed = moveInput.magnitude;
+        if (animator)
+        {
+            animator.SetFloat("Speed", speed);
+        }
     }
 
     void HandleLook()
