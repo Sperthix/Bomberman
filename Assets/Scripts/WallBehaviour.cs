@@ -14,7 +14,10 @@ public class WallBehaviour : MonoBehaviour
         Y = y;
         Type = type;
 
-        GameState.Instance.RegisterWall(x, y, this);
+        if (GameState.Instance != null)
+        {
+            GameState.Instance.RegisterWall(x, y, this);
+        }
     }
     
     public void HitByExplosion()
