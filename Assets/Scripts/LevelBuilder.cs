@@ -36,11 +36,6 @@ public class LevelBuilder : MonoBehaviour
 
                 Vector3 worldPos = new Vector3(x * cellSize, 0f, y * cellSize);
                 
-                if (tile.Type is WallType.Empty or WallType.WallDestructible)
-                {
-                    SpawnFloor(worldPos);
-                }
-
                 switch (tile.Type)
                 {
                     case WallType.WallIndestructible:
@@ -59,13 +54,7 @@ public class LevelBuilder : MonoBehaviour
 
         SpawnPlayer();
     }
-
-    private void SpawnFloor(Vector3 pos)
-    {
-        if (floorPrefab == null) return;
-        Instantiate(floorPrefab, pos, Quaternion.identity, transform);
-    }
-
+    
     private void SpawnWallIndestructible(Vector3 pos, int x, int y)
     {
         if (wallIndestructiblePrefab == null) return;
