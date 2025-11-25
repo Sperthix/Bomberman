@@ -21,8 +21,11 @@ public class WallBehaviour : MonoBehaviour
     {
         if (Type != WallType.WallDestructible) return;
 
-        GameState.Instance.WallMap[X, Y] = new GridTile(WallType.Empty);
-        GameState.Instance.UnregisterWall(X, Y, this);
+        if (GameState.Instance)
+        {
+            GameState.Instance.WallMap[X, Y] = new GridTile(WallType.Empty);
+            GameState.Instance.UnregisterWall(X, Y, this);
+        }
 
         Destroy(gameObject);
     }
