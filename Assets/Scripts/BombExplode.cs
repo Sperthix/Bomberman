@@ -8,11 +8,11 @@ public class BombExplode : MonoBehaviour
     [SerializeField] private float fuseTime = 3f;
     [SerializeField] private int range = 2;
 
-    private GameState _gs;
+    private GameState gs;
 
     private void OnEnable()
     {
-        _gs = GameState.Instance;
+        gs = GameState.Instance;
         StartCoroutine(FuseCoroutine());
     }
 
@@ -24,9 +24,8 @@ public class BombExplode : MonoBehaviour
 
     private void Explode()
     {
-        var playerGridVec = _gs.WorldToGrid(_gs.PlayerRef.transform.position);
-        var bombGridVec = _gs.WorldToGrid(transform.position);
-
+        var playerGridVec = gs.WorldToGrid(gs.PlayerRef.transform.position);
+        var bombGridVec = gs.WorldToGrid(transform.position);
 
         Vector2Int[] dirs =
         {
@@ -43,7 +42,6 @@ public class BombExplode : MonoBehaviour
 
         ExplodeInLine(bombGridVec, Vector2Int.zero, 1, playerGridVec);
 
-
         Destroy(gameObject);
     }
 
@@ -53,14 +51,9 @@ public class BombExplode : MonoBehaviour
         {
             Vector2Int tileGridVec = explodeGridOrigin + dir * step;
 
-            GridTile tile;
-            try
+            GridTile tile = gs.GetTile(tileGridVec);
+            if (tile == null)
             {
-                tile = _gs.WallMap[tileGridVec.x, tileGridVec.y];
-            }
-            catch (IndexOutOfRangeException e)
-            {
-                Debug.Log(e);
                 return;
             }
 
@@ -68,23 +61,28 @@ public class BombExplode : MonoBehaviour
             {
                 case WallType.WallIndestructible:
                     return;
+
                 case WallType.WallDestructible:
-                    var wallBehaviour = _gs.WallObjects[tileGridVec.x, tileGridVec.y];
-                    if (wallBehaviour)
+                    // TODO: upgradnuta bomba moze znicit aj viac po sebe iducich stien
+                    if (tile.Wall)
                     {
-                        wallBehaviour.HitByExplosion();
+                        tile.Wall.HitByExplosion();
                     }
-
+                    else
+                    {
+                        tile.Type = WallType.Empty;
+                    }
                     return;
-                case WallType.Empty:
-                    // spawn vfx
 
+                case WallType.Empty:
                     if (tileGridVec == playerGridVec)
                     {
-                        _gs.PlayerRef.GetComponent<PlayerHealth>().TakeDamage(1);
+                        gs.PlayerRef.GetComponent<PlayerHealth>().TakeDamage(1);
                     }
 
+                    // TODO: spawn VFX
                     break;
+
                 default:
                     Console.WriteLine($"Unknown tile type: {tile.Type}");
                     break;
