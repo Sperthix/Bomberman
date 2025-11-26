@@ -1,6 +1,6 @@
+using System;
 using UnityEngine;
 using System.Collections;
-using System.Linq;
 using State;
 
 public class BombExplode : MonoBehaviour
@@ -8,8 +8,11 @@ public class BombExplode : MonoBehaviour
     [SerializeField] private float fuseTime = 3f;
     [SerializeField] private int range = 2;
 
+    private GameState _gs;
+
     private void OnEnable()
     {
+        _gs = GameState.Instance;
         StartCoroutine(FuseCoroutine());
     }
 
@@ -19,93 +22,73 @@ public class BombExplode : MonoBehaviour
         Explode();
     }
 
-    public void Explode()
+    private void Explode()
     {
-        var gs = GameState.Instance;
-        if (!gs)
-        {
-            Debug.LogError("No GameState");
-            Destroy(gameObject);
-            return;
-        }
-        
-        if (!gs.WorldToGrid(transform.position, out var bx, out var by))
-        {
-            Debug.LogWarning("Bomb is outside arena grid!");
-            Destroy(gameObject);
-            return;
-        }
-        
-        var affectedTiles = new System.Collections.Generic.List<Vector2Int> { new Vector2Int(bx, by) };
+        var playerGridVec = _gs.WorldToGrid(_gs.PlayerRef.transform.position);
+        var bombGridVec = _gs.WorldToGrid(transform.position);
+
+
         Vector2Int[] dirs =
         {
-            new Vector2Int(1, 0),   // right
-            new Vector2Int(-1, 0),  // left
-            new Vector2Int(0, 1),   // up
-            new Vector2Int(0, -1)   // down
+            Vector2Int.right,
+            Vector2Int.left,
+            Vector2Int.up,
+            Vector2Int.down,
         };
 
         foreach (var dir in dirs)
         {
-            for (var step = 1; step <= range; step++)
-            {
-                var x = bx + dir.x * step;
-                var y = by + dir.y * step;
-
-                // Check ci ide na kraj areny, keby sme v buducnosti nemali indestructible na kraje mapy
-                if (x < 0 || x >= gs.ArenaWidth || y < 0 || y >= gs.ArenaHeight)
-                    break;
-
-                var tile = gs.WallMap[x, y];
-                
-                if (tile.Type == WallType.WallIndestructible)
-                {
-                    break;
-                }
-                
-                affectedTiles.Add(new Vector2Int(x, y));
-                
-                if (tile.Type == WallType.WallDestructible)
-                {
-                    break;
-                }
-
-                // Empty → pokračujeme ďalej
-            }
-        }
-        
-        foreach (var tilePos in affectedTiles)
-        {
-            var x = tilePos.x;
-            var y = tilePos.y;
-
-            var tile = gs.WallMap[x, y];
-
-            if (tile.Type != WallType.WallDestructible) continue;
-            var wallBehaviour = gs.WallObjects[x, y];
-            if (wallBehaviour)
-            {
-                wallBehaviour.HitByExplosion();
-            }
-            else
-            {
-                gs.WallMap[x, y] = new GridTile(WallType.Empty);
-            }
+            ExplodeInLine(bombGridVec, dir, range, playerGridVec);
         }
 
-        // TODO: PlayerHealth / TakeDamage
+        ExplodeInLine(bombGridVec, Vector2Int.zero, 1, playerGridVec);
 
-        var playerGO = GameObject.FindGameObjectWithTag("Player");
-        if (playerGO)
-        {
-            var playerPos = playerGO.transform.position;
-            if (gs.WorldToGrid(playerPos, out var px, out var py) &&
-                affectedTiles.Any(tilePos => tilePos.x == px && tilePos.y == py))
-            {
-                Debug.Log("PLAYER HIT BY EXPLOSION!");
-            }
-        }
-        
+
         Destroy(gameObject);
+    }
+
+    private void ExplodeInLine(Vector2Int explodeGridOrigin, Vector2Int dir, int rangeInDir, Vector2Int playerGridVec)
+    {
+        for (var step = 1; step <= rangeInDir; step++)
+        {
+            Vector2Int tileGridVec = explodeGridOrigin + dir * step;
+
+            GridTile tile;
+            try
+            {
+                tile = _gs.WallMap[tileGridVec.x, tileGridVec.y];
+            }
+            catch (IndexOutOfRangeException e)
+            {
+                Debug.Log(e);
+                return;
+            }
+
+            switch (tile.Type)
+            {
+                case WallType.WallIndestructible:
+                    return;
+                case WallType.WallDestructible:
+                    var wallBehaviour = _gs.WallObjects[tileGridVec.x, tileGridVec.y];
+                    if (wallBehaviour)
+                    {
+                        wallBehaviour.HitByExplosion();
+                    }
+
+                    return;
+                case WallType.Empty:
+                    // spawn vfx
+
+                    if (tileGridVec == playerGridVec)
+                    {
+                        _gs.PlayerRef.GetComponent<PlayerHealth>().TakeDamage(1);
+                    }
+
+                    break;
+                default:
+                    Console.WriteLine($"Unknown tile type: {tile.Type}");
+                    break;
+            }
+        }
     }
 }
