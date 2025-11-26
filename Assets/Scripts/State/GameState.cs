@@ -8,6 +8,7 @@ public class GameState : MonoBehaviour
     public static GameState Instance { get; private set; }
     public GridTile[,] WallMap { get; private set; }
     public WallBehaviour[,] WallObjects { get; private set; }
+    public GameObject PlayerRef { get; set; }
 
     public List<PlayerSpawn> PlayerSpawns { get; private set; }
     [SerializeField] private float cellSize = 2f;
@@ -94,13 +95,11 @@ public class GameState : MonoBehaviour
             }
         }
     }
-    public bool WorldToGrid(Vector3 worldPos, out int gx, out int gy)
+    public Vector2Int WorldToGrid(Vector3 worldPos)
     {
-        gx = Mathf.RoundToInt(worldPos.x / cellSize);
-        gy = Mathf.RoundToInt(worldPos.z / cellSize);
-
-        return gx >= 0 && gx < ArenaWidth &&
-               gy >= 0 && gy < ArenaHeight;
+        return new Vector2Int(
+            Mathf.RoundToInt(worldPos.x / cellSize),
+            Mathf.RoundToInt(worldPos.z / cellSize));
     }
 
     public Vector3 GridToWorld(int gx, int gy)

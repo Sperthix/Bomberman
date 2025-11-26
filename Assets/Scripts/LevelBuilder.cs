@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 using State;
 
@@ -7,7 +8,7 @@ public class LevelBuilder : MonoBehaviour
     [SerializeField] private GameObject floorPrefab;
     [SerializeField] private GameObject wallIndestructiblePrefab;
     [SerializeField] private GameObject wallDestructiblePrefab;
-    [SerializeField] private Transform playerTransform;
+    [SerializeField] private GameObject playerPrefab;
 
     private GameState state;
 
@@ -93,22 +94,10 @@ public class LevelBuilder : MonoBehaviour
 
     private void SpawnPlayer()
     {
-        if (playerTransform == null)
-        {
-            Debug.LogError("PlayerTransform not assigned in LevelBuilder");
-            return;
-        }
-
-        if (state.PlayerSpawns == null || state.PlayerSpawns.Count == 0)
-        {
-            Debug.LogError("No player spawn found in GameState");
-            return;
-        }
-
-        var spawn = state.PlayerSpawns[0];
-        float cellSize = state.CellSize;
-
-        Vector3 pos = new Vector3(spawn.X * cellSize, 1f, spawn.Y * cellSize);
-        playerTransform.position = pos;
+        GameObject.FindGameObjectsWithTag("Player").ToList().ForEach(player => Destroy(player));
+        var spawn = state.PlayerSpawns.First();
+        var playerSpawnLoc = state.GridToWorld(spawn.X, spawn.Y);
+        playerSpawnLoc.y += 1f;
+        state.PlayerRef = Instantiate(playerPrefab, playerSpawnLoc, Quaternion.identity);
     }
 }
