@@ -7,12 +7,16 @@ public class BombExplode : MonoBehaviour
 {
     [SerializeField] private float fuseTime = 3f;
     [SerializeField] private int range = 2;
-
+    
+    public GameObject explosionVFXPrefab;
+    
+    private AudioSource _audioSource;
     private GameState gs;
 
     private void OnEnable()
     {
         gs = GameState.Instance;
+        _audioSource = GetComponent<AudioSource>();
         StartCoroutine(FuseCoroutine());
     }
 
@@ -24,6 +28,8 @@ public class BombExplode : MonoBehaviour
 
     private void Explode()
     {
+        _audioSource.Play();
+        
         var playerGridVec = gs.WorldToGrid(gs.PlayerRef.transform.position);
         var bombGridVec = gs.WorldToGrid(transform.position);
 
@@ -42,7 +48,7 @@ public class BombExplode : MonoBehaviour
 
         ExplodeInLine(bombGridVec, Vector2Int.zero, 1, playerGridVec);
 
-        Destroy(gameObject);
+        Destroy(gameObject,1f);
     }
 
     private void ExplodeInLine(Vector2Int explodeGridOrigin, Vector2Int dir, int rangeInDir, Vector2Int playerGridVec)
@@ -72,15 +78,17 @@ public class BombExplode : MonoBehaviour
                     {
                         tile.Type = WallType.Empty;
                     }
+
                     return;
 
                 case WallType.Empty:
+                    StartCoroutine(DelayedSpawnVFX(tileGridVec, dir, step * 0.05f));
+                    
                     if (tileGridVec == playerGridVec)
                     {
                         gs.PlayerRef.GetComponent<PlayerHealth>().TakeDamage(1);
                     }
 
-                    // TODO: spawn VFX
                     break;
 
                 default:
@@ -88,5 +96,25 @@ public class BombExplode : MonoBehaviour
                     break;
             }
         }
+    }
+
+    private IEnumerator DelayedSpawnVFX(Vector2Int tileVec, Vector2Int directionVec, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        SpawnExplosionVFX(tileVec, directionVec);
+
+    }
+
+    private void SpawnExplosionVFX(Vector2Int vector2Int, Vector2Int directionVec)
+    {
+        Vector3 direction3D = new Vector3(directionVec.x, 0, directionVec.y);
+        var rotation = Quaternion.LookRotation(direction3D);
+
+        var posVec = gs.GridToWorld(vector2Int.x, vector2Int.y);
+        posVec.y += 1f;
+
+        var vfx = Instantiate(explosionVFXPrefab,
+            posVec, rotation);
+        Destroy(vfx, 1);
     }
 }
