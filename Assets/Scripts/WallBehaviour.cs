@@ -7,37 +7,25 @@ public class WallBehaviour : MonoBehaviour
     public int Y { get; private set; }
 
     public WallType Type { get; private set; }
-    
+
     public void Init(int x, int y, WallType type)
     {
         X = x;
         Y = y;
         Type = type;
 
-        if (GameState.Instance != null)
-        {
-            GameState.Instance.RegisterWall(x, y, this);
-        }
+        GameState.Instance.RegisterWall(x, y, this);
     }
-    
+
     public void HitByExplosion()
     {
         if (Type != WallType.WallDestructible) return;
-
-        if (GameState.Instance)
-        {
-            GameState.Instance.WallMap[X, Y] = new GridTile(WallType.Empty);
-            GameState.Instance.UnregisterWall(X, Y, this);
-        }
-
+        GameState.Instance.UnregisterWall(X, Y, this);
         Destroy(gameObject);
     }
 
     private void OnDestroy()
     {
-        if (GameState.Instance)
-        {
-            GameState.Instance.UnregisterWall(X, Y, this);
-        }
+        GameState.Instance.UnregisterWall(X, Y, this);
     }
 }
