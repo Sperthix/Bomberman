@@ -33,7 +33,7 @@ public class LevelBuilder : MonoBehaviour
         {
             for (int x = 0; x < state.ArenaWidth; x++)
             {
-                GridTile tile = state.WallMap[x, y];
+                GridTile tile = state.Grid[x, y];
 
                 Vector3 worldPos = new Vector3(x * cellSize, 0f, y * cellSize);
                 

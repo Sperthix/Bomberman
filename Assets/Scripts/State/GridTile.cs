@@ -12,14 +12,13 @@ namespace State
     [System.Serializable]
     public class GridTile
     {
-        public WallType Type { get; }
-
-        public bool IsDestructible => Type == WallType.WallDestructible;
-        public bool IsIndestructible => Type == WallType.WallIndestructible;
+        public WallType Type;
+        public WallBehaviour Wall;
 
         public GridTile(WallType type)
         {
             Type = type;
+            Wall = null;
         }
     }
 }
