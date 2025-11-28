@@ -28,7 +28,7 @@ public class BombExplode : MonoBehaviour
 
     private void Explode()
     {
-        _audioSource.Play();
+        AudioSource.PlayClipAtPoint(_audioSource.clip, transform.position, 10f);
         
         var playerGridVec = gs.WorldToGrid(gs.PlayerRef.transform.position);
         var bombGridVec = gs.WorldToGrid(transform.position);
