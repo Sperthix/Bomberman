@@ -5,18 +5,22 @@ public class PlayerController : MonoBehaviour
 {
     public float walkSpeed = 15f;
     public float sensitivity = 10f;
+    private float pitch = 0f;
     public float bombSpawnDistance = 1f;
     
     public GameObject bombPrefab;
 
     private CharacterController characterController;
     private PlayerInput playerInput;
+
+    [SerializeField] private Transform playerView;
     
     private InputAction moveAction;
     private InputAction lookAction;
     private InputAction placeBombAction;
 
     private Animator animator;
+    private const float MaxLookAngle = 80f;
 
     void Start()
     {
@@ -26,6 +30,8 @@ public class PlayerController : MonoBehaviour
         moveAction = playerInput.actions["Move"];
         lookAction = playerInput.actions["Look"];
         placeBombAction = playerInput.actions["PlaceBomb"];
+        
+        playerView = GetComponentInChildren<Camera>()?.transform;
         
         animator = GetComponentInChildren<Animator>();
         if (animator == null)
@@ -69,6 +75,9 @@ public class PlayerController : MonoBehaviour
     {
         var lookInput = lookAction.ReadValue<Vector2>();
         transform.Rotate(Vector3.up, lookInput.x * Time.deltaTime * sensitivity);
+        pitch -= lookInput.y * Time.deltaTime * sensitivity;
+        pitch = Mathf.Clamp(pitch, -MaxLookAngle, MaxLookAngle);
+        playerView.localRotation = Quaternion.Euler(pitch, 0f, 0f);
     }
 
     void PlaceBomb()
