@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,13 +10,16 @@ public class PlayerController : MonoBehaviour
     private float pitch = 0f;
     private const float MaxLookAngle = 80f;
     
-    public GameObject bombPrefab;
+    public GameObject[] bombPrefabs;
+    
+    public int SelectedBombIndex { get; private set; } = 0;
+    public event Action<int, int> OnBombSelectionChanged; // (currentIndex, totalCount)
 
     private CharacterController characterController;
     private PlayerInput playerInput;
 
     [SerializeField] private Transform playerView;
-    
+
     private InputAction moveAction;
     private InputAction lookAction;
     private InputAction placeBombAction;
@@ -26,20 +30,24 @@ public class PlayerController : MonoBehaviour
     {
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
+
         moveAction = playerInput.actions["Move"];
         lookAction = playerInput.actions["Look"];
         placeBombAction = playerInput.actions["PlaceBomb"];
         playerView = GetComponentInChildren<Camera>()?.transform;
         animator = GetComponentInChildren<Animator>();
-        
+
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        
+        NotifyBombSelectionChanged();
     }
 
     void Update()
     {
         HandleMovement();
         HandleLook();
+        HandleBombSelection();
         HandleBombPlacement();
     }
 
@@ -51,13 +59,38 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void HandleBombSelection()
+    {
+        var keyboard = Keyboard.current;
+        if (keyboard == null) return;
+        
+        if (keyboard.digit1Key.wasPressedThisFrame) SetBombIndex(0);
+        if (keyboard.digit2Key.wasPressedThisFrame) SetBombIndex(1);
+        if (keyboard.digit3Key.wasPressedThisFrame) SetBombIndex(2);
+    }
+
+    private void SetBombIndex(int index)
+    {
+        if (bombPrefabs == null || bombPrefabs.Length == 0) return;
+        if (index < 0 || index >= bombPrefabs.Length) return;
+        if (index == SelectedBombIndex) return;
+
+        SelectedBombIndex = index;
+        NotifyBombSelectionChanged();
+    }
+
+    private void NotifyBombSelectionChanged()
+    {
+        OnBombSelectionChanged?.Invoke(SelectedBombIndex, bombPrefabs?.Length ?? 0);
+    }
+
     void HandleMovement()
     {
         var moveInput = moveAction.ReadValue<Vector2>();
         var moveVector = transform.forward * moveInput.y + transform.right * moveInput.x;
         characterController.Move(moveVector * (Time.deltaTime * walkSpeed));
-        
-        float speed = moveInput.magnitude; 
+
+        float speed = moveInput.magnitude;
         animator.SetFloat("Speed", speed);
     }
 
@@ -72,11 +105,24 @@ public class PlayerController : MonoBehaviour
 
     void PlaceBomb()
     {
+        if (bombPrefabs == null || bombPrefabs.Length == 0)
+        {
+            Debug.LogWarning("PlayerController: bombPrefabs nie sú nastavené.");
+            return;
+        }
+
+        var prefab = bombPrefabs[Mathf.Clamp(SelectedBombIndex, 0, bombPrefabs.Length - 1)];
+        if (!prefab)
+        {
+            Debug.LogWarning($"PlayerController: bomb prefab na indexe {SelectedBombIndex} je null.");
+            return;
+        }
+
         Vector3 center = characterController.bounds.center;
         Vector3 forward = transform.forward;
-        Vector3 PlacePos = center + forward * bombSpawnDistance;
-        PlacePos.y = 0.5f;
-        
-        Instantiate(bombPrefab, PlacePos, Quaternion.identity);
+        Vector3 placePos = center + forward * bombSpawnDistance;
+        placePos.y = 0.5f;
+
+        Instantiate(prefab, placePos, Quaternion.identity);
     }
 }

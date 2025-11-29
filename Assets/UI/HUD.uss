@@ -1,11 +1,47 @@
-VisualElement {}
-
 .hud-lives {
     position: absolute;
     top: 5%;
     left: 5%;
     font-size: 24px;
     color: white;
+    padding: 5px;
     background-color: gray;
     border-radius: 25px;
+}
+
+.hud-action-bar {
+    position: absolute;
+    bottom: 16px;
+    left: 50%;
+    translate: -50% 0;
+    display: flex;
+    flex-direction: row;
+}
+
+.action-slot {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    border-width: 2px;
+    border-color: #888;
+    justify-content: flex-end;
+    align-items: center;
+    flex-direction: column;
+    background-color: rgba(0, 0, 0, 0.5);
+    margin: 0 5px;
+}
+
+.action-slot .slot-key {
+    font-size: 12px;
+    color: #ccc;
+}
+
+.action-slot .slot-label {
+    font-size: 14px;
+    color: white;
+}
+
+.action-slot.selected {
+    border-color: green;
+    background-color: rgba(1, 1, 0, 0.4);
 }
