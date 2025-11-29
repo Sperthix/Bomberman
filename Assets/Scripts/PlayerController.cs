@@ -1,3 +1,6 @@
+using System;
+using System.Linq;
+using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,7 +11,10 @@ public class PlayerController : MonoBehaviour
     private float pitch = 0f;
     public float bombSpawnDistance = 1f;
     
+    [CanBeNull] public PlayerPlaceableLookAtData placeableLookAtData;
+    
     public GameObject bombPrefab;
+    public GameObject bombPreviewPrefab;
 
     private CharacterController characterController;
     private PlayerInput playerInput;
@@ -21,9 +27,14 @@ public class PlayerController : MonoBehaviour
 
     private Animator animator;
     private const float MaxLookAngle = 80f;
+    
+    private BoxCollider _placementCheckBox;
+    private Camera _camera;
 
     void Start()
     {
+        _camera = GetComponentInChildren<Camera>();
+        _placementCheckBox = GetComponent<BoxCollider>();
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
         
@@ -47,14 +58,18 @@ public class PlayerController : MonoBehaviour
     {
         HandleMovement();
         HandleLook();
+        UpdatePlacementLookAtData();
         HandleBombPlacement();
+        
     }
 
     private void HandleBombPlacement()
     {
-        if (placeBombAction.WasPerformedThisFrame())
+        if (placeBombAction.WasPressedThisFrame())
         {
-            PlaceBomb();
+            Debug.Log("stlacene");
+            var bombPreview = Instantiate(bombPreviewPrefab, transform.position + (transform.forward * 1f), Quaternion.identity);
+            bombPreview.GetComponent<SpawnPlaceableValidator>().Init(this.gameObject);
         }
     }
 
@@ -79,20 +94,37 @@ public class PlayerController : MonoBehaviour
         pitch = Mathf.Clamp(pitch, -MaxLookAngle, MaxLookAngle);
         playerView.localRotation = Quaternion.Euler(pitch, 0f, 0f);
     }
-
-    void PlaceBomb()
+    
+    private void UpdatePlacementLookAtData()
     {
-        if (bombPrefab is null)
+        var hits = Physics.RaycastAll(_camera.transform.position, _camera.transform.forward, 100f);
+        hits = hits.OrderBy(h => h.distance).ToArray();
+        foreach (var hit in hits)
         {
-            Debug.LogWarning("Nemam bombu");
-            return;
+            if (hit.collider.gameObject.isStatic)
+            {
+                placeableLookAtData = new PlayerPlaceableLookAtData(transform.position, hit.point, hit.collider.gameObject);
+                return;
+            }
         }
+        placeableLookAtData = null;
         
-        Vector3 center = characterController.bounds.center;
-        Vector3 forward = transform.forward;
-        Vector3 PlacePos = center + forward * bombSpawnDistance;
-        PlacePos.y = 0.5f;
         
-        Instantiate(bombPrefab, PlacePos, Quaternion.identity);
     }
+
+
+}
+
+public class PlayerPlaceableLookAtData
+{
+    public PlayerPlaceableLookAtData(Vector3 playerPosition, Vector3 staticObjectIntersectPosition, GameObject intersectedObject)
+    {
+        this.playerPosition = playerPosition;
+        this.staticObjectIntersectPosition = staticObjectIntersectPosition;
+        IntersectedObject = intersectedObject;
+    }
+
+    public Vector3 playerPosition;
+    public Vector3 staticObjectIntersectPosition;
+    public GameObject IntersectedObject;
 }
