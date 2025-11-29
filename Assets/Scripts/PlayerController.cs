@@ -5,8 +5,9 @@ public class PlayerController : MonoBehaviour
 {
     public float walkSpeed = 15f;
     public float sensitivity = 10f;
-    private float pitch = 0f;
     public float bombSpawnDistance = 1f;
+    private float pitch = 0f;
+    private const float MaxLookAngle = 80f;
     
     public GameObject bombPrefab;
 
@@ -20,24 +21,16 @@ public class PlayerController : MonoBehaviour
     private InputAction placeBombAction;
 
     private Animator animator;
-    private const float MaxLookAngle = 80f;
 
     void Start()
     {
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
-        
         moveAction = playerInput.actions["Move"];
         lookAction = playerInput.actions["Look"];
         placeBombAction = playerInput.actions["PlaceBomb"];
-        
         playerView = GetComponentInChildren<Camera>()?.transform;
-        
         animator = GetComponentInChildren<Animator>();
-        if (animator == null)
-        {
-            Debug.LogError("Animator not found for player");
-        }
         
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
@@ -64,11 +57,8 @@ public class PlayerController : MonoBehaviour
         var moveVector = transform.forward * moveInput.y + transform.right * moveInput.x;
         characterController.Move(moveVector * (Time.deltaTime * walkSpeed));
         
-        float speed = moveInput.magnitude;
-        if (animator)
-        {
-            animator.SetFloat("Speed", speed);
-        }
+        float speed = moveInput.magnitude; 
+        animator.SetFloat("Speed", speed);
     }
 
     void HandleLook()
@@ -82,12 +72,6 @@ public class PlayerController : MonoBehaviour
 
     void PlaceBomb()
     {
-        if (bombPrefab is null)
-        {
-            Debug.LogWarning("Nemam bombu");
-            return;
-        }
-        
         Vector3 center = characterController.bounds.center;
         Vector3 forward = transform.forward;
         Vector3 PlacePos = center + forward * bombSpawnDistance;
