@@ -1,17 +1,43 @@
+using System;
 using UnityEngine;
 
 public class PlayerHealth : MonoBehaviour
 {
-    private int _health = 3;
+    [SerializeField] private int maxHealth = 3;
+    public int MaxHealth => maxHealth;
+    public int CurrentHealth { get; private set; }
+    
+    public event Action<int, int> OnHealthChanged;
+
+    private void Awake()
+    {
+        CurrentHealth = maxHealth;
+    }
 
     public void TakeDamage(int damage)
     {
-        _health -= damage;
-        Debug.Log("HP left: " + _health);
-        if (_health <= 0)
+        CurrentHealth -= damage;
+        NotifyHealthChanged();
+        if (CurrentHealth <= 0)
         {
-            
-            Destroy(gameObject);
+            Die();
         }
+    }
+    
+    public void Heal(int amount)
+    {
+        CurrentHealth = Mathf.Min(maxHealth, CurrentHealth + amount);
+        NotifyHealthChanged();
+    }
+
+    private void Die()
+    {
+        Debug.Log("Player died");
+        //TODO: Respawn / scoreboard / endgame
+    }
+
+    private void NotifyHealthChanged()
+    {
+        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
     }
 }

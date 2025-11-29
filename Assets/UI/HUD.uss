@@ -1,0 +1,11 @@
+VisualElement {}
+
+.hud-lives {
+    position: absolute;
+    top: 5%;
+    left: 5%;
+    font-size: 24px;
+    color: white;
+    background-color: gray;
+    border-radius: 25px;
+}
