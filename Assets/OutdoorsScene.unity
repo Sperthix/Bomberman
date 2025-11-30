@@ -223,6 +223,7 @@ GameObject:
   - component: {fileID: 687135506}
   - component: {fileID: 687135505}
   - component: {fileID: 687135507}
+  - component: {fileID: 687135508}
   m_Layer: 5
   m_Name: UI_HUD
   m_TagString: Untagged
@@ -280,6 +281,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7804c964744cdb54f9c72ef633270250, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.HudController
+--- !u!114 &687135508
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687135504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd4b1dd1dc7d71647aa3d6791454352f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.HealthChangeController
+  flashDuration: 1
+  maxOverlayOpacity: 0.5
+  numberScale: 1.5
+  damageColor: {r: 1, g: 0, b: 0, a: 1}
+  healColor: {r: 0, g: 1, b: 0, a: 1}
+  lowHealthThreshold: 0.3
+  lowHealthColor: {r: 1, g: 0.6, b: 0.2, a: 1}
+  lowHealthPulseScale: 1.1
+  lowHealthPulseSpeed: 4
+  lowHealthOverlayOpacity: 0.1
 --- !u!1 &969313615
 GameObject:
   m_ObjectHideFlags: 0

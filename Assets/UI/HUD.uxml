@@ -15,4 +15,5 @@
             <ui:Label name="slot-2-label" text="Bomb 3" class="slot-label" />
         </ui:VisualElement>
     </ui:VisualElement>
+    <ui:VisualElement name="health-change-overlay" class="health-change-overlay"></ui:VisualElement>
 </ui:UXML>

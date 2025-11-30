@@ -105,19 +105,7 @@ public class PlayerController : MonoBehaviour
 
     void PlaceBomb()
     {
-        if (bombPrefabs == null || bombPrefabs.Length == 0)
-        {
-            Debug.LogWarning("PlayerController: bombPrefabs nie sú nastavené.");
-            return;
-        }
-
         var prefab = bombPrefabs[Mathf.Clamp(SelectedBombIndex, 0, bombPrefabs.Length - 1)];
-        if (!prefab)
-        {
-            Debug.LogWarning($"PlayerController: bomb prefab na indexe {SelectedBombIndex} je null.");
-            return;
-        }
-
         Vector3 center = characterController.bounds.center;
         Vector3 forward = transform.forward;
         Vector3 placePos = center + forward * bombSpawnDistance;
