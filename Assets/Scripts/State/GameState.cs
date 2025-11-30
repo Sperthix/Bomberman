@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using State;
@@ -16,6 +17,7 @@ public class GameState : MonoBehaviour
 
     public int ArenaWidth { get; private set; }
     public int ArenaHeight { get; private set; }
+    public event Action<PlayerHealth> OnPlayerSpawned;
 
     private void Awake()
     {
@@ -107,6 +109,13 @@ public class GameState : MonoBehaviour
                 }
             }
         }
+    }
+    
+    public void RegisterPlayer(GameObject player)
+    {
+        PlayerRef = player;
+        var health = player.GetComponent<PlayerHealth>(); 
+        OnPlayerSpawned?.Invoke(health);
     }
 
     public Vector2Int WorldToGrid(Vector3 worldPos)

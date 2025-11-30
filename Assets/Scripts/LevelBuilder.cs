@@ -98,6 +98,7 @@ public class LevelBuilder : MonoBehaviour
         var spawn = state.PlayerSpawns.First();
         var playerSpawnLoc = state.GridToWorld(spawn.X, spawn.Y);
         playerSpawnLoc.y += 1f;
-        state.PlayerRef = Instantiate(playerPrefab, playerSpawnLoc, Quaternion.identity);
+        var player = Instantiate(playerPrefab, playerSpawnLoc, Quaternion.identity, transform);
+        state.RegisterPlayer(player);
     }
 }

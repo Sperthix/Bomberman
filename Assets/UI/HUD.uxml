@@ -1,0 +1,19 @@
+<ui:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/HUD.uss?fileID=7433441132597879392&amp;guid=d38daeba0d2d5624c9369abcd46766c1&amp;type=3#HUD" />
+    <ui:Label text="Lives: X" name="lives-label" enabled="true" class="hud-lives" style="-unity-text-align: middle-center; text-overflow: clip; white-space: nowrap; height: 55px; width: 116px;" />
+    <ui:VisualElement name="action-bar" class="hud-action-bar" style="flex-direction: row; align-items: stretch; justify-content: center; align-self: center;">
+        <ui:VisualElement name="slot-0" class="action-slot">
+            <ui:Label name="slot-0-key" text="1" class="slot-key" />
+            <ui:Label name="slot-0-label" text="Bomb 1" class="slot-label" />
+        </ui:VisualElement>
+        <ui:VisualElement name="slot-1" class="action-slot">
+            <ui:Label name="slot-1-key" text="2" class="slot-key" />
+            <ui:Label name="slot-1-label" text="Bomb 2" class="slot-label" />
+        </ui:VisualElement>
+        <ui:VisualElement name="slot-2" class="action-slot">
+            <ui:Label name="slot-2-key" text="3" class="slot-key" />
+            <ui:Label name="slot-2-label" text="Bomb 3" class="slot-label" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+    <ui:VisualElement name="health-change-overlay" class="health-change-overlay"></ui:VisualElement>
+</ui:UXML>
