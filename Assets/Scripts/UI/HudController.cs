@@ -66,7 +66,6 @@ namespace UI
             if (playerController)
             {
                 playerController.OnBombSelectionChanged += HandleBombSelectionChanged;
-                HandleBombSelectionChanged(playerController.SelectedBombIndex, playerController.bombPrefabs?.Length ?? 0);
             }
 
             HandleHealthChanged(playerHealth.CurrentHealth, playerHealth.MaxHealth);
