@@ -32,8 +32,7 @@ public class PlayerHealth : MonoBehaviour
 
     private void Die()
     {
-        Debug.Log("Player died");
-        //TODO: Respawn / scoreboard / endgame
+        GameManager.Instance.PlayerDied();
     }
 
     private void NotifyHealthChanged()
