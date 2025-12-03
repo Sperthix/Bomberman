@@ -4,18 +4,28 @@ namespace UI
 {
     public class CursorController : MonoBehaviour
     {
-        private void OnEnable()
-        { 
-            GameManager.Instance.OnPhaseChanged += HandlePhaseChanged;
-        }
+        private bool isSubscribed;
 
+        private void OnEnable()
+        {
+            if (!GameManager.Instance) return;
+            GameManager.Instance.OnPhaseChanged += HandlePhaseChanged;
+            isSubscribed = true;
+            HandlePhaseChanged(GameManager.Instance.Phase);
+        }
+        
         private void OnDisable()
         {
+            if (!isSubscribed || !GameManager.Instance) return;
             GameManager.Instance.OnPhaseChanged -= HandlePhaseChanged;
+            isSubscribed = false;
         }
 
         private void Start()
         {
+            if (isSubscribed || !GameManager.Instance) return;
+            GameManager.Instance.OnPhaseChanged += HandlePhaseChanged;
+            isSubscribed = true;
             HandlePhaseChanged(GameManager.Instance.Phase);
         }
 
