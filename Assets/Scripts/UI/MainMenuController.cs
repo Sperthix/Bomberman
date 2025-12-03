@@ -24,19 +24,7 @@ namespace UI
 
         private void ShowMainMenu()
         {
-            Debug.Log(mainMenuScreenAsset);
-            Debug.Log(screenContainer);
             LoadScreen(mainMenuScreenAsset, wireMainMenu: true);
-        }
-
-        private void ShowSettings()
-        {
-            LoadScreen(settingsScreenAsset, wireSettings: true);
-        }
-
-        private void StartGame()
-        {
-            GameManager.Instance.StartLocalGame();
         }
 
         private void LoadScreen(VisualTreeAsset asset, bool wireMainMenu = false, bool wireSettings = false)
@@ -63,8 +51,8 @@ namespace UI
             var btnSettings = screenRoot.Q<Button>("btn-settings");
             var btnQuit = screenRoot.Q<Button>("btn-quit");
 
-            btnPlay.clicked += StartGame;
-            btnSettings.clicked += ShowSettings;
+            btnPlay.clicked += () => GameManager.Instance.StartLocalGame();
+            btnSettings.clicked += () => LoadScreen(settingsScreenAsset, wireSettings: true);
             btnQuit.clicked += Application.Quit;
         }
 

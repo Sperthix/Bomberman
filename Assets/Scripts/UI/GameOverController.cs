@@ -33,27 +33,7 @@ namespace UI
 
         private void HandlePhaseChanged(GamePhase phase)
         {
-            switch (phase)
-            {
-                case GamePhase.GameOver:
-                    ToggleGameOver(true);
-                    break;
-                case GamePhase.Playing:
-                case GamePhase.MainMenu:
-                default:
-                    ToggleGameOver(false);
-                    break;
-            }
-        }
-
-        private void ToggleGameOver(bool show)
-        {
-            if (show)
-            {
-                gameOverScreen.style.display = DisplayStyle.Flex;
-                return;
-            }
-            gameOverScreen.style.display = DisplayStyle.None;
+            gameOverScreen.style.display = phase == GamePhase.GameOver ? DisplayStyle.Flex : DisplayStyle.None;
         }
 
         private static void OnRestartClicked()
