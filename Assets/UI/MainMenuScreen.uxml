@@ -2,8 +2,8 @@
     <Style src="project://database/Assets/UI/Menu.uss?fileID=7433441132597879392&amp;guid=c1f40b45c511d204bb2de799d9434708&amp;type=3#Menu" />
     <ui:VisualElement name="main-menu-screen" class="main-menu-screen">
         <ui:Label text="Bomberman" name="title" class="menu-title" />
-        <ui:Button name="btn-play" text="Play" class="menu-button" />
-        <ui:Button name="btn-settings" text="Settings" class="menu-button" />
-        <ui:Button name="btn-quit" text="Quit" class="menu-button" />
+        <ui:Button text="Play" name="btn-play" class="menu-btn" />
+        <ui:Button text="Settings" name="btn-settings" class="menu-btn" />
+        <ui:Button text="Quit" name="btn-quit" class="menu-btn" />
     </ui:VisualElement>
 </ui:UXML>

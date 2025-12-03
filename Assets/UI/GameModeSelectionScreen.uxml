@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="gamemode-selection-screen" class="gamemode-selection-screen">
+
+        <ui:Label text="Which game mode do you want to play?"
+                  name="gamemode-selection-label"
+                  class="gamemode-selection-label" />
+
+        <ui:Button text="Single player"
+                   name="gamemode-selection-sp"
+                   class="gamemode-selection-btn" />
+
+        <ui:Button text="Multiplayer"
+                   name="gamemode-selection-mp"
+                   class="gamemode-selection-btn" />
+
+        <ui:Button text="Back"
+                   name="gamemode-selection-back"
+                   class="gamemode-selection-back-btn" />
+
+    </ui:VisualElement>
+</ui:UXML>

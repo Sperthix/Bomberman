@@ -3,6 +3,6 @@
     <ui:VisualElement name="settings-screen" class="settings-screen">
         <ui:Label text="Settings" class="menu-title" />
         <ui:Label text="(Settings coming soon...)" class="settings-label" />
-        <ui:Button name="btn-back" text="Back" class="menu-button" />
+        <ui:Button text="Back" name="btn-back" class="menu-btn" />
     </ui:VisualElement>
 </ui:UXML>

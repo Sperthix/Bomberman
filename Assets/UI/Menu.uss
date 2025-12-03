@@ -34,6 +34,40 @@
     flex-direction: column;
 }
 
+/* Additional play selection screens */
+
+.gamemode-selection-screen,
+.multiplayer-mode-screen {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.gamemode-selection-label,
+.multiplayer-mode-label {
+    font-size: 32px;
+    color: white;
+    margin-bottom: 16px;
+}
+
+.gamemode-selection-btn,
+.multiplayer-mode-btn,
+.multiplayer-back-btn,
+.gamemode-selection-back-btn {
+    width: 260px;
+    height: 48px;
+    font-size: 20px;
+    margin-top: 6px;
+}
+
 /* Game over screen */
 
 .game-over-screen {
@@ -58,7 +92,7 @@
     margin-bottom: 24px;
 }
 
-.menu-button {
+.menu-btn {
     width: 220px;
     margin-top: 6px;
 }

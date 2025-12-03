@@ -223,6 +223,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UI.MainMenuController
   mainMenuScreenAsset: {fileID: 9197481963319205126, guid: 5fbeefe64b0578644aba45bf6dad5b76, type: 3}
   settingsScreenAsset: {fileID: 9197481963319205126, guid: 7a96d0663e5d590459ec7316f57eb32c, type: 3}
+  gameModeSelectionScreenAsset: {fileID: 9197481963319205126, guid: 51e46924212acaf40a664fa3316a0561, type: 3}
+  multiplayerModeScreenAsset: {fileID: 9197481963319205126, guid: b52e1e17b68fe6e45a312caf4e56dc18, type: 3}
 --- !u!114 &1798249154
 MonoBehaviour:
   m_ObjectHideFlags: 0

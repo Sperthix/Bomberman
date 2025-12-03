@@ -1,0 +1,21 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <ui:VisualElement name="multiplayer-mode-screen" class="multiplayer-mode-screen">
+
+        <ui:Label text="Multiplayer"
+                  name="multiplayer-mode-label"
+                  class="multiplayer-mode-label" />
+
+        <ui:Button text="Host game"
+                   name="mp-host-btn"
+                   class="multiplayer-mode-btn" />
+
+        <ui:Button text="Join game"
+                   name="mp-join-btn"
+                   class="multiplayer-mode-btn" />
+
+        <ui:Button text="Back"
+                   name="mp-back-btn"
+                   class="multiplayer-back-btn" />
+
+    </ui:VisualElement>
+</ui:UXML>

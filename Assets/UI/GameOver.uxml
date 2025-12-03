@@ -2,7 +2,7 @@
     <Style src="project://database/Assets/UI/Menu.uss?fileID=7433441132597879392&amp;guid=c1f40b45c511d204bb2de799d9434708&amp;type=3#Menu" />
     <ui:VisualElement name="game-over-screen" class="game-over-screen">
         <ui:Label text="Game Over" class="menu-title" />
-        <ui:Button name="btn-restart" text="Restart" class="menu-button" />
-        <ui:Button name="btn-main-menu" text="Main Menu" class="menu-button" />
+        <ui:Button text="Restart" name="btn-restart"  class="menu-btn" />
+        <ui:Button text="Main Menu" name="btn-main-menu"  class="menu-btn" />
     </ui:VisualElement>
 </ui:UXML>
