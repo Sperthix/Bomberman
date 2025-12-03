@@ -16,7 +16,6 @@ namespace UI
         [SerializeField] private Color lowHealthColor = new Color(1f, 0.6f, 0.2f);
         [SerializeField] private float lowHealthPulseScale = 1.1f;
         [SerializeField] private float lowHealthPulseSpeed = 4f;
-        [SerializeField] private float lowHealthOverlayOpacity = 0.1f;
 
         private VisualElement overlay;
         private Label livesLabel;
@@ -127,7 +126,6 @@ namespace UI
                 finalScale *= pulse;
 
                 baseTargetColor = lowHealthColor;
-                overlayBaseOpacity += lowHealthOverlayOpacity;
             }
 
             Color finalColor = baseTargetColor;
