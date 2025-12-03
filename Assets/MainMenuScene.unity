@@ -129,6 +129,7 @@ GameObject:
   m_Component:
   - component: {fileID: 795530676}
   - component: {fileID: 795530675}
+  - component: {fileID: 795530677}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -163,6 +164,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &795530677
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 795530674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7ce29e6c0b4091248b1bf052c1a02e79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UI.CursorController
 --- !u!1 &1798249151
 GameObject:
   m_ObjectHideFlags: 0
@@ -208,6 +221,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d3a8224d1b52a0c48bcf54b021de7cc6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.MainMenuController
+  mainMenuScreenAsset: {fileID: 9197481963319205126, guid: 5fbeefe64b0578644aba45bf6dad5b76, type: 3}
+  settingsScreenAsset: {fileID: 9197481963319205126, guid: 7a96d0663e5d590459ec7316f57eb32c, type: 3}
 --- !u!114 &1798249154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,7 +237,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.dll::UnityEngine.UIElements.UIDocument
   m_PanelSettings: {fileID: 11400000, guid: ba876213c5a72d048a75e4edc6e10b18, type: 2}
   m_ParentUI: {fileID: 0}
-  sourceAsset: {fileID: 9197481963319205126, guid: 5fbeefe64b0578644aba45bf6dad5b76, type: 3}
+  sourceAsset: {fileID: 9197481963319205126, guid: b778656d66201a64ab9171484816240b, type: 3}
   m_SortingOrder: 0
   m_Position: 0
   m_WorldSpaceSizeMode: 1
