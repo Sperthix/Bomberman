@@ -38,7 +38,7 @@ namespace UI
 
         private static void OnRestartClicked()
         {
-            GameManager.Instance.RestartGame();
+            GameManager.Instance.StartSinglePlayerGame();
         }
 
         private static void OnMainMenuClicked()

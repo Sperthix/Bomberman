@@ -51,7 +51,7 @@ namespace UI
             var btnSettings = screenRoot.Q<Button>("btn-settings");
             var btnQuit = screenRoot.Q<Button>("btn-quit");
 
-            btnPlay.clicked += () => GameManager.Instance.StartLocalGame();
+            btnPlay.clicked += () => GameManager.Instance.StartSinglePlayerGame();
             btnSettings.clicked += () => LoadScreen(settingsScreenAsset, wireSettings: true);
             btnQuit.clicked += Application.Quit;
         }

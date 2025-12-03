@@ -38,10 +38,15 @@ public class GameManager : MonoBehaviour
         OnPhaseChanged?.Invoke(Phase);
     }
     
-    public void StartLocalGame()
+    public void StartSinglePlayerGame()
     {
-        SetPhase(GamePhase.Playing);
+        if (GameState.Instance)
+        {
+            GameState.Instance.restartToDefaultMap();
+        }
+        
         Time.timeScale = 1f;
+        SetPhase(GamePhase.Playing);
         SceneManager.LoadScene(GameSceneName);
     }
 
@@ -56,12 +61,5 @@ public class GameManager : MonoBehaviour
     {
         SetPhase(GamePhase.GameOver);
         Time.timeScale = 0f;
-    }
-    
-    public void RestartGame()
-    {
-        Time.timeScale = 1f;
-        SetPhase(GamePhase.Playing);
-        SceneManager.LoadScene(GameSceneName);
     }
 }
