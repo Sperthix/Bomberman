@@ -18,6 +18,30 @@ public class GameState : MonoBehaviour
     public int ArenaWidth { get; private set; }
     public int ArenaHeight { get; private set; }
     public event Action<PlayerHealth> OnPlayerSpawned;
+    
+    [Header("Map")]
+    [SerializeField] private string defaultMap = @"
+        XXXXXXXXXXXXXXXXXXXX
+        XPOOWOWOOOWOWOOOWOOX
+        XOXOXWXWWXWXWXWWXWOX
+        XOWOOOWOWOOOWOWOOOWX
+        XWXWXWXOXWXWXOXWXWXX
+        XOWOWOOOWOWOOOWOWOOX
+        XWXOXWXWXOXWXWXOXWXX
+        XOOOWOOOWOOOWOOOWOOX
+        XWXWXWWXWXWXWWXWXWOX
+        XOWOOOWOWOOOWOWOOOWX
+        XWXWXOXWXWXOXWXWXWXX
+        XOWOWOOOWOWOOOWOWOOX
+        XWXOXWXWXOXWXWXOXWXX
+        XOOOWOOOWOOOWOOOWOOX
+        XWXWXWWXWXWXWWXWXWOX
+        XOWOOOWOWOOOWOWOOOWX
+        XWXWXOXWXWXOXWXWXWXX
+        XOWOWOOOWOWOOOWOWOOX
+        XOOOWOOOWOOOWOOOWOOX
+        XXXXXXXXXXXXXXXXXXXX
+    ";
 
     private void Awake()
     {
@@ -30,28 +54,12 @@ public class GameState : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
-        Load(@"
-            XXXXXXXXXXXXXXXXXXXX
-            XPOOWOWOOOWOWOOOWOOX
-            XOXOXWXWWXWXWXWWXWOX
-            XOWOOOWOWOOOWOWOOOWX
-            XWXWXWXOXWXWXOXWXWXX
-            XOWOWOOOWOWOOOWOWOOX
-            XWXOXWXWXOXWXWXOXWXX
-            XOOOWOOOWOOOWOOOWOOX
-            XWXWXWWXWXWXWWXWXWOX
-            XOWOOOWOWOOOWOWOOOWX
-            XWXWXOXWXWXOXWXWXWXX
-            XOWOWOOOWOWOOOWOWOOX
-            XWXOXWXWXOXWXWXOXWXX
-            XOOOWOOOWOOOWOOOWOOX
-            XWXWXWWXWXWXWWXWXWOX
-            XOWOOOWOWOOOWOWOOOWX
-            XWXWXOXWXWXOXWXWXWXX
-            XOWOWOOOWOWOOOWOWOOX
-            XOOOWOOOWOOOWOOOWOOX
-            XXXXXXXXXXXXXXXXXXXX
-        ");
+        Load(defaultMap);
+    }
+
+    public void restartToDefaultMap()
+    {
+        Load(defaultMap);
     }
 
     private void Load(string mapData)

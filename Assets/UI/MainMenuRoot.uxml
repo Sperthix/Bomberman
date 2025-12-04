@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Menu.uss?fileID=7433441132597879392&amp;guid=c1f40b45c511d204bb2de799d9434708&amp;type=3#Menu" />
+    <ui:VisualElement name="root" class="menu-root">
+        <ui:VisualElement name="screen-container" class="screen-container" />
+    </ui:VisualElement>
+</ui:UXML>

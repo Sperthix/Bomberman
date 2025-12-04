@@ -39,9 +39,6 @@ public class PlayerController : MonoBehaviour
         lookAction = playerInput.actions["Look"];
         placeBombAction = playerInput.actions["PlaceBomb"];
         animator = GetComponentInChildren<Animator>();
-
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
         
         NotifyBombSelectionChanged();
     }

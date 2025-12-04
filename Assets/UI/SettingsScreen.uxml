@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Menu.uss?fileID=7433441132597879392&amp;guid=c1f40b45c511d204bb2de799d9434708&amp;type=3#Menu" />
+    <ui:VisualElement name="settings-screen" class="settings-screen">
+        <ui:Label text="Settings" class="menu-title" />
+        <ui:Label text="(Settings coming soon...)" class="settings-label" />
+        <ui:Button text="Back" name="btn-back" class="menu-btn" />
+    </ui:VisualElement>
+</ui:UXML>
