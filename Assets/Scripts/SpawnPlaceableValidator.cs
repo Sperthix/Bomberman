@@ -1,7 +1,8 @@
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class SpawnPlaceableValidator : MonoBehaviour
+public class SpawnPlaceableValidator : NetworkBehaviour
 {
     private GameObject _playerRef;
     private PlayerController _playerControllerRef;
@@ -127,7 +128,6 @@ public class SpawnPlaceableValidator : MonoBehaviour
     {
         var gs = GameState.Instance;
         _maxPlacementDistance = (int)(gs.CellSize * 1.5);
-        print(_maxPlacementDistance);
             
         _playerRef = spawnPlayerRef;
 
@@ -151,7 +151,10 @@ public class SpawnPlaceableValidator : MonoBehaviour
             return;
         }
 
-        Instantiate(bombPrefab, transform.position, Quaternion.identity);
+        var go = Instantiate(bombPrefab, transform.position, Quaternion.identity);
+        var no = go.GetComponent<NetworkObject>();
+        no.Spawn();
+        
         Destroy(gameObject);
     }
 }

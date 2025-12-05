@@ -49,23 +49,23 @@ namespace UI
             baseColor = livesLabel.resolvedStyle.color;
 
             var gs = GameState.Instance;
-            gs.OnPlayerSpawned += WirePlayer;
+            gs.OnLocalPlayerSpawned += WireLocalPlayer;
 
             if (!gs.PlayerRef) return;
             var existingHealth = gs.PlayerRef.GetComponent<PlayerHealth>();
             if (existingHealth != null)
             {
-                WirePlayer(existingHealth);
+                WireLocalPlayer(existingHealth);
             }
         }
 
         private void OnDestroy()
         {
-            GameState.Instance.OnPlayerSpawned -= WirePlayer;
+            GameState.Instance.OnLocalPlayerSpawned -= WireLocalPlayer;
             playerHealth.OnHealthChanged -= HandleHealthChanged;
         }
 
-        private void WirePlayer(PlayerHealth health)
+        private void WireLocalPlayer(PlayerHealth health)
         {
             if (playerHealth)
             {
@@ -75,8 +75,8 @@ namespace UI
             playerHealth = health;
             playerHealth.OnHealthChanged += HandleHealthChanged;
 
-            lastHealth = playerHealth.CurrentHealth;
-            UpdateLowHealthState(playerHealth.CurrentHealth, playerHealth.MaxHealth);
+            lastHealth = playerHealth.currentHealth.Value;
+            UpdateLowHealthState(playerHealth.currentHealth.Value, playerHealth.MaxHealth);
         }
 
         private void HandleHealthChanged(int current, int max)

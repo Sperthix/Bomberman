@@ -128,6 +128,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 50882397}
+  - component: {fileID: 50882398}
   - component: {fileID: 50882396}
   m_Layer: 0
   m_Name: GameState
@@ -148,7 +149,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a88a54dee356880ba5cd7cd8ddb3e63, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameState
+  ShowTopMostFoldoutHeaderGroup: 1
+  LevelBuilder: {fileID: 422813932}
   cellSize: 2
+  defaultMap: "\n        XXXXXXXXXXXXXXXXXXXX\n        XPOOWOWOOOWOWOOOWOOX\n       
+    XOXOXWXWWXWXWXWWXWOX\n        XOWOOOWOWOOOWOWOOOWX\n        XWXWXWXOXWXWXOXWXWXX\n       
+    XOWOWOOOWOWOOOWOWOOX\n        XWXOXWXWXOXWXWXOXWXX\n        XOOOWOOOWOOOWOOOWOOX\n       
+    XWXWXWWXWXWXWWXWXWOX\n        XOWOOOWOWOOOWOWOOOWX\n        XWXWXOXWXWXOXWXWXWXX\n       
+    XOWOWOOOWOWOOOWOWOOX\n        XWXOXWXWXOXWXWXOXWXX\n        XOOOWOOOWOOOWOOOWOOX\n       
+    XWXWXWWXWXWXWWXWXWOX\n        XOWOOOWOWOOOWOWOOOWX\n        XWXWXOXWXWXOXWXWXWXX\n       
+    XOWOWOOOWOWOOOWOWOOX\n        XOOOWOOOWOOOWOOOWOOX\n        XXXXXXXXXXXXXXXXXXXX\n    "
 --- !u!4 &50882397
 Transform:
   m_ObjectHideFlags: 0
@@ -164,6 +174,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &50882398
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 50882395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 2114653511
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &259991043
 GameObject:
   m_ObjectHideFlags: 0
@@ -205,6 +240,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 422813931}
+  - component: {fileID: 422813933}
   - component: {fileID: 422813932}
   m_Layer: 0
   m_Name: LevelBuilder
@@ -240,10 +276,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6f4094fd6a4d2864a97d86e8a8c11908, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelBuilder
+  ShowTopMostFoldoutHeaderGroup: 1
   floorPrefab: {fileID: 2794645888665000028, guid: 4c6e92d75ee30a7468629e5a2e66f883, type: 3}
   wallIndestructiblePrefab: {fileID: 2364436100679826612, guid: c81e32832437d714fb4157d37a982a71, type: 3}
   wallDestructiblePrefab: {fileID: 8235394160929668786, guid: b44048c773a26224e9a295e569e5829c, type: 3}
   playerPrefab: {fileID: 1789242652558074013, guid: 81fd9e7f3822f9c58a12838ac3e2d819, type: 3}
+--- !u!114 &422813933
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 422813930}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 2288599740
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &687135504
 GameObject:
   m_ObjectHideFlags: 0
@@ -254,6 +316,7 @@ GameObject:
   m_Component:
   - component: {fileID: 687135506}
   - component: {fileID: 687135505}
+  - component: {fileID: 687135509}
   - component: {fileID: 687135507}
   - component: {fileID: 687135508}
   m_Layer: 5
@@ -313,6 +376,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7804c964744cdb54f9c72ef633270250, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.HudController
+  ShowTopMostFoldoutHeaderGroup: 1
 --- !u!114 &687135508
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -325,6 +389,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dd4b1dd1dc7d71647aa3d6791454352f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UI.HealthChangeController
+  ShowTopMostFoldoutHeaderGroup: 1
   flashDuration: 1
   maxOverlayOpacity: 0.5
   numberScale: 1.5
@@ -333,7 +398,31 @@ MonoBehaviour:
   lowHealthColor: {r: 1, g: 0.6, b: 0.2, a: 1}
   lowHealthPulseScale: 1.1
   lowHealthPulseSpeed: 4
-  lowHealthOverlayOpacity: 0.1
+--- !u!114 &687135509
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 687135504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 3126090024
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &969313615
 GameObject:
   m_ObjectHideFlags: 0
@@ -371,6 +460,11 @@ MonoBehaviour:
   m_LightUnit: 0
   m_LuxAtDistance: 1
   m_Intensity: 0
+  m_Version: 13
+  m_ObsoleteShadowResolutionTier: 1
+  m_ObsoleteUseShadowQualitySettings: 0
+  m_ObsoleteCustomShadowResolution: 512
+  m_ObsoleteContactShadows: 0
   m_InnerSpotPercent: 0
   m_SpotIESCutoffPercent: 100
   m_LightDimmer: 1
@@ -489,11 +583,6 @@ MonoBehaviour:
   m_AreaLightEmissiveMeshShadowCastingMode: 0
   m_AreaLightEmissiveMeshMotionVectorGenerationMode: 0
   m_AreaLightEmissiveMeshLayer: -1
-  m_Version: 13
-  m_ObsoleteShadowResolutionTier: 1
-  m_ObsoleteUseShadowQualitySettings: 0
-  m_ObsoleteCustomShadowResolution: 512
-  m_ObsoleteContactShadows: 0
 --- !u!108 &969313617
 Light:
   m_ObjectHideFlags: 0
@@ -586,6 +675,7 @@ GameObject:
   - component: {fileID: 981970267}
   - component: {fileID: 981970266}
   - component: {fileID: 981970265}
+  - component: {fileID: 981970269}
   m_Layer: 0
   m_Name: Plane
   m_TagString: Untagged
@@ -686,6 +776,31 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &981970269
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 981970264}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
+  GlobalObjectIdHash: 2362233897
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 0
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!1 &1003978922
 GameObject:
   m_ObjectHideFlags: 0

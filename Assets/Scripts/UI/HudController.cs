@@ -26,19 +26,19 @@ namespace UI
             slots[1] = actionBar.Q<VisualElement>("slot-1");
             slots[2] = actionBar.Q<VisualElement>("slot-2");
 
-            gs.OnPlayerSpawned += WirePlayer;
+            gs.OnLocalPlayerSpawned += WireLocalPlayer;
 
             if (!gs.PlayerRef) return;
             var existingHealth = gs.PlayerRef.GetComponent<PlayerHealth>();
             if (existingHealth)
             {
-                WirePlayer(existingHealth);
+                WireLocalPlayer(existingHealth);
             }
         }
 
         private void OnDestroy()
         {
-            GameState.Instance.OnPlayerSpawned -= WirePlayer;
+            GameState.Instance.OnLocalPlayerSpawned -= WireLocalPlayer;
 
             if (playerHealth && isWired)
             {
@@ -51,7 +51,7 @@ namespace UI
             }
         }
 
-        private void WirePlayer(PlayerHealth health)
+        private void WireLocalPlayer(PlayerHealth health)
         {
             if (playerHealth && isWired)
             {
@@ -68,7 +68,7 @@ namespace UI
                 playerController.OnBombSelectionChanged += HandleBombSelectionChanged;
             }
 
-            HandleHealthChanged(playerHealth.CurrentHealth, playerHealth.MaxHealth);
+            HandleHealthChanged(playerHealth.currentHealth.Value, playerHealth.MaxHealth);
         }
 
         private void HandleHealthChanged(int current, int max)

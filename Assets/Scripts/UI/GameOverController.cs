@@ -14,16 +14,16 @@ namespace UI
         {
             var uiDoc = GetComponent<UIDocument>();
             var root = uiDoc.rootVisualElement;
-
+            
             gameOverScreen = root.Q<VisualElement>("game-over-screen");
             gameOverScreen.style.display = DisplayStyle.None;
-
-            btnRestart = root.Q<Button>("btn-restart");
-            btnMainMenu = root.Q<Button>("btn-main-menu");
-            btnRestart.clicked += OnRestartClicked;
-            btnMainMenu.clicked += OnMainMenuClicked;
             
-            GameManager.Instance.OnPhaseChanged += HandlePhaseChanged;
+            // btnRestart = root.Q<Button>("btn-restart");
+            // btnMainMenu = root.Q<Button>("btn-main-menu");
+            // btnRestart.clicked += OnRestartClicked;
+            // btnMainMenu.clicked += OnMainMenuClicked;
+            //
+            // GameManager.Instance.OnPhaseChanged += HandlePhaseChanged;
         }
 
         private void OnDestroy()

@@ -1,4 +1,5 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,7 +10,7 @@ public enum GamePhase
     GameOver
 }
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance { get; set; }
 
@@ -19,7 +20,7 @@ public class GameManager : MonoBehaviour
 
     public event Action<GamePhase> OnPhaseChanged;
 
-    private void Awake()
+    private void Start()
     {
         if (Instance && Instance != this)
         {
@@ -49,6 +50,15 @@ public class GameManager : MonoBehaviour
         SetPhase(GamePhase.Playing);
         SceneManager.LoadScene(GameSceneName);
     }
+    
+    public void StartMultiPlayerGame(bool isHost)
+    {
+        
+        Time.timeScale = 1f;
+        SetPhase(GamePhase.Playing);
+        if (isHost) NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
+    }
+    
 
     public void BackToMainMenu()
     {

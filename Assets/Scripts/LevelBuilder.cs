@@ -1,8 +1,9 @@
 using System.Linq;
 using UnityEngine;
 using State;
+using Unity.Netcode;
 
-public class LevelBuilder : MonoBehaviour
+public class LevelBuilder : NetworkBehaviour
 {
     [Header("Prefabs")]
     [SerializeField] private GameObject floorPrefab;
@@ -14,19 +15,23 @@ public class LevelBuilder : MonoBehaviour
 
     private void Start()
     {
-        state = GameState.Instance;
-
-        if (state == null)
+        if (IsServer)
         {
-            Debug.LogError("GameState.Instance not found!");
-            return;
+            NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
         }
-
-        BuildLevel();
     }
 
-    private void BuildLevel()
+    private void OnClientConnected(ulong clientId)
     {
+        SpawnPlayer(clientId);
+    }
+
+   
+
+    public void BuildLevel()
+    {
+        state = GameState.Instance;
+        
         float cellSize = state.CellSize;
 
         for (int y = 0; y < state.ArenaHeight; y++)
@@ -53,7 +58,11 @@ public class LevelBuilder : MonoBehaviour
             }
         }
 
-        SpawnPlayer();
+        foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
+        {
+            SpawnPlayer(clientId);
+        }
+        
     }
     
     private void SpawnWallIndestructible(Vector3 pos, int x, int y)
@@ -62,6 +71,8 @@ public class LevelBuilder : MonoBehaviour
 
         Vector3 p = pos + Vector3.up * 1f;
         GameObject go = Instantiate(wallIndestructiblePrefab, p, Quaternion.identity, transform);
+        var no = go.GetComponent<NetworkObject>();
+        no.Spawn();
         
         WallBehaviour wb = go.GetComponent<WallBehaviour>() ?? go.GetComponentInChildren<WallBehaviour>();
         if (wb != null)
@@ -80,7 +91,9 @@ public class LevelBuilder : MonoBehaviour
 
         Vector3 p = pos + Vector3.up * 1f;
         GameObject go = Instantiate(wallDestructiblePrefab, p, Quaternion.identity, transform);
-
+        var no = go.GetComponent<NetworkObject>();
+        no.Spawn();
+        
         WallBehaviour wb = go.GetComponent<WallBehaviour>() ?? go.GetComponentInChildren<WallBehaviour>();
         if (wb != null)
         {
@@ -92,13 +105,14 @@ public class LevelBuilder : MonoBehaviour
         }
     }
 
-    private void SpawnPlayer()
+    private void SpawnPlayer(ulong clientId)
     {
-        GameObject.FindGameObjectsWithTag("Player").ToList().ForEach(player => Destroy(player));
         var spawn = state.PlayerSpawns.First();
         var playerSpawnLoc = state.GridToWorld(spawn.X, spawn.Y);
         playerSpawnLoc.y += 1f;
         var player = Instantiate(playerPrefab, playerSpawnLoc, Quaternion.identity, transform);
-        state.RegisterPlayer(player);
+        NetworkObject networkObject = player.GetComponent<NetworkObject>();
+        networkObject.SpawnAsPlayerObject(clientId,true);
+        
     }
 }

@@ -1,3 +1,5 @@
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -100,13 +102,23 @@ namespace UI
             btnHost.clicked += () =>
             {
                 Debug.Log("Multiplayer: Host selected");
-                // TODO: MP host game
+                NetworkManager.Singleton.OnServerStarted += () =>
+                {
+                    GameManager.Instance.StartMultiPlayerGame(true);
+                    
+                };
+                NetworkManager.Singleton.StartHost();
             };
 
             btnJoin.clicked += () =>
             {
                 Debug.Log("Multiplayer: Join selected");
-                // TODO: MP join game
+                
+                var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+                transport.ConnectionData.Address = "127.0.0.1";
+
+                GameManager.Instance.StartMultiPlayerGame(false);
+                NetworkManager.Singleton.StartClient();
             };
 
             btnBack.clicked += ShowGameModeSelection;

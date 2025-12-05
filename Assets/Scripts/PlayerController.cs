@@ -1,10 +1,11 @@
 using System;
 using System.Linq;
 using JetBrains.Annotations;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : NetworkBehaviour
 {
     public float walkSpeed = 15f;
     public float sensitivity = 10f;
@@ -31,20 +32,32 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        
+       
         PlayerCamera = GetComponentInChildren<Camera>();
+       
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
-
+        if (!IsOwner)
+        {
+            PlayerCamera.gameObject.SetActive(false);
+            playerInput.enabled = false;
+            return;
+        }
         moveAction = playerInput.actions["Move"];
         lookAction = playerInput.actions["Look"];
         placeBombAction = playerInput.actions["PlaceBomb"];
         animator = GetComponentInChildren<Animator>();
+        
+        GameState.Instance.RegisterPlayer(gameObject);
+        
         
         NotifyBombSelectionChanged();
     }
 
     void Update()
     {
+        if (!IsOwner) return;
         HandleMovement();
         HandleLook();
         UpdatePlacementLookAtData();

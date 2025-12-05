@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using State;
+using Unity.Netcode;
 using UnityEngine;
 
-public class GameState : MonoBehaviour
+public class GameState : NetworkBehaviour
 {
     public static GameState Instance { get; private set; }
+    public LevelBuilder LevelBuilder;
 
     public GridTile[,] Grid { get; private set; }
     public GameObject PlayerRef { get; set; }
@@ -17,7 +19,7 @@ public class GameState : MonoBehaviour
 
     public int ArenaWidth { get; private set; }
     public int ArenaHeight { get; private set; }
-    public event Action<PlayerHealth> OnPlayerSpawned;
+    public event Action<PlayerHealth> OnLocalPlayerSpawned;
     
     [Header("Map")]
     [SerializeField] private string defaultMap = @"
@@ -43,18 +45,22 @@ public class GameState : MonoBehaviour
         XXXXXXXXXXXXXXXXXXXX
     ";
 
-    private void Awake()
+    private void Start()
     {
-        if (Instance && Instance != this)
         {
-            Destroy(gameObject);
-            return;
+            if (Instance && Instance != this)
+            {
+                Destroy(gameObject);
+                return;
+            }
+
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+
+            if (!IsServer) return;
+            Load(defaultMap);
+            
         }
-
-        Instance = this;
-        DontDestroyOnLoad(gameObject);
-
-        Load(defaultMap);
     }
 
     public void restartToDefaultMap()
@@ -64,58 +70,64 @@ public class GameState : MonoBehaviour
 
     private void Load(string mapData)
     {
-        var lines = mapData.Split('\n');
-        var validLines = lines
-            .Select(l => l.Trim())
-            .Where(l => !string.IsNullOrEmpty(l))
-            .ToList();
-
-        ArenaHeight = validLines.Count;
-        ArenaWidth = validLines[0].Length;
-
-        if (validLines.Any(l => l.Length != ArenaWidth))
+        if (IsServer)
         {
-            Debug.LogError("Map data is inconsistent");
-            return;
-        }
+            var lines = mapData.Split('\n');
+            var validLines = lines
+                .Select(l => l.Trim())
+                .Where(l => !string.IsNullOrEmpty(l))
+                .ToList();
 
-        Grid = new GridTile[ArenaWidth, ArenaHeight];
-        PlayerSpawns = new List<PlayerSpawn>();
+            ArenaHeight = validLines.Count;
+            ArenaWidth = validLines[0].Length;
 
-        for (var y = 0; y < ArenaHeight; y++)
-        {
-            var line = validLines[y];
-
-            for (var x = 0; x < ArenaWidth; x++)
+            if (validLines.Any(l => l.Length != ArenaWidth))
             {
-                var c = line[x];
+                Debug.LogError("Map data is inconsistent");
+                return;
+            }
 
-                switch (c)
+            Grid = new GridTile[ArenaWidth, ArenaHeight];
+            PlayerSpawns = new List<PlayerSpawn>();
+
+            for (var y = 0; y < ArenaHeight; y++)
+            {
+                var line = validLines[y];
+
+                for (var x = 0; x < ArenaWidth; x++)
                 {
-                    case 'X':
-                        Grid[x, y] = new GridTile(WallType.WallIndestructible);
-                        break;
+                    var c = line[x];
 
-                    case 'W':
-                        Grid[x, y] = new GridTile(WallType.WallDestructible);
-                        break;
+                    switch (c)
+                    {
+                        case 'X':
+                            Grid[x, y] = new GridTile(WallType.WallIndestructible);
+                            break;
 
-                    case 'P':
-                        PlayerSpawns.Add(new PlayerSpawn(x, y));
-                        Grid[x, y] = new GridTile(WallType.Empty);
-                        break;
+                        case 'W':
+                            Grid[x, y] = new GridTile(WallType.WallDestructible);
+                            break;
 
-                    case 'O':
-                    case ' ':
-                        Grid[x, y] = new GridTile(WallType.Empty);
-                        break;
+                        case 'P':
+                            PlayerSpawns.Add(new PlayerSpawn(x, y));
+                            Grid[x, y] = new GridTile(WallType.Empty);
+                            break;
 
-                    default:
-                        Debug.LogWarning($"Neznámy znak '{c}' na pozícii [{x},{y}]");
-                        Grid[x, y] = new GridTile(WallType.Empty);
-                        break;
+                        case 'O':
+                        case ' ':
+                            Grid[x, y] = new GridTile(WallType.Empty);
+                            break;
+
+                        default:
+                            Debug.LogWarning($"Neznámy znak '{c}' na pozícii [{x},{y}]");
+                            Grid[x, y] = new GridTile(WallType.Empty);
+                            break;
+                    }
                 }
             }
+            
+            LevelBuilder.BuildLevel();
+            
         }
     }
     
@@ -123,7 +135,7 @@ public class GameState : MonoBehaviour
     {
         PlayerRef = player;
         var health = player.GetComponent<PlayerHealth>(); 
-        OnPlayerSpawned?.Invoke(health);
+        OnLocalPlayerSpawned?.Invoke(health);
     }
 
     public Vector2Int WorldToGrid(Vector3 worldPos)

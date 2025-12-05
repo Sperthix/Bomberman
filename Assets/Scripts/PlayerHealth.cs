@@ -1,24 +1,30 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerHealth : MonoBehaviour
+public class PlayerHealth : NetworkBehaviour
 {
-    [SerializeField] private int maxHealth = 3;
+    private static int maxHealth = 3;
     public int MaxHealth => maxHealth;
-    public int CurrentHealth { get; private set; }
+    public NetworkVariable<int> currentHealth = new NetworkVariable<int>(3);
+
     
     public event Action<int, int> OnHealthChanged;
 
-    private void Awake()
+    private void Start()
     {
-        CurrentHealth = maxHealth;
+        if (IsOwner)
+        {
+            currentHealth.OnValueChanged += (oldValue, newValue) =>
+            NotifyHealthChanged();
+        }
     }
 
     public void TakeDamage(int damage)
     {
-        CurrentHealth -= damage;
+        currentHealth.Value -= damage;
         NotifyHealthChanged();
-        if (CurrentHealth <= 0)
+        if (currentHealth.Value <= 0)
         {
             Die();
         }
@@ -26,7 +32,7 @@ public class PlayerHealth : MonoBehaviour
     
     public void Heal(int amount)
     {
-        CurrentHealth = Mathf.Min(maxHealth, CurrentHealth + amount);
+        currentHealth.Value = Mathf.Min(maxHealth, currentHealth.Value + amount);
         NotifyHealthChanged();
     }
 
@@ -37,6 +43,6 @@ public class PlayerHealth : MonoBehaviour
 
     private void NotifyHealthChanged()
     {
-        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
+        OnHealthChanged?.Invoke(currentHealth.Value, maxHealth);
     }
 }
