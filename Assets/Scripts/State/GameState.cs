@@ -21,12 +21,12 @@ public class GameState : NetworkBehaviour
     public int ArenaHeight { get; private set; }
     public event Action<PlayerHealth> OnLocalPlayerSpawned;
     
-    [Header("Map")]
-    [SerializeField] private string defaultMap = @"
+    
+    private string defaultMap = @"
         XXXXXXXXXXXXXXXXXXXX
-        XPOOWOWOOOWOWOOOWOOX
+        XPOPWOWOOOWOWOOOWOOX
         XOXOXWXWWXWXWXWWXWOX
-        XOWOOOWOWOOOWOWOOOWX
+        XPWOOOWOWOOOWOWOOOWX
         XWXWXWXOXWXWXOXWXWXX
         XOWOWOOOWOWOOOWOWOOX
         XWXOXWXWXOXWXWXOXWXX

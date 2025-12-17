@@ -27,11 +27,22 @@ public class PlayerController : NetworkBehaviour
     private InputAction placeBombAction;
 
     private Animator animator;
+    
+    public NetworkVariable<Vector3> spawnPosition = new NetworkVariable<Vector3>(
+        Vector3.zero, 
+        NetworkVariableReadPermission.Owner
+    );
+
 
     public Camera PlayerCamera { get; private set; }
 
     void Start()
     {
+        spawnPosition.OnValueChanged += (_, newValue) =>
+        {
+            transform.position = newValue;
+        };
+        transform.position = spawnPosition.Value;
         
        
         PlayerCamera = GetComponentInChildren<Camera>();

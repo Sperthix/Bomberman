@@ -1,7 +1,7 @@
-using System.Linq;
-using UnityEngine;
+using System.Collections;
 using State;
 using Unity.Netcode;
+using UnityEngine;
 
 public class LevelBuilder : NetworkBehaviour
 {
@@ -12,6 +12,8 @@ public class LevelBuilder : NetworkBehaviour
     [SerializeField] private GameObject playerPrefab;
 
     private GameState state;
+    
+    private int _playerSpawnIndex = 0;
 
     private void Start()
     {
@@ -107,12 +109,24 @@ public class LevelBuilder : NetworkBehaviour
 
     private void SpawnPlayer(ulong clientId)
     {
-        var spawn = state.PlayerSpawns.First();
+        // later we should have lobby and assign spawns on players 
+        var spawn = state.PlayerSpawns[_playerSpawnIndex % state.PlayerSpawns.Count];
+        _playerSpawnIndex++;
         var playerSpawnLoc = state.GridToWorld(spawn.X, spawn.Y);
         playerSpawnLoc.y += 1f;
         var player = Instantiate(playerPrefab, playerSpawnLoc, Quaternion.identity, transform);
         NetworkObject networkObject = player.GetComponent<NetworkObject>();
         networkObject.SpawnAsPlayerObject(clientId,true);
-        
+        StartCoroutine(SetPlayerSpawnPositionNextFrame(player, playerSpawnLoc));
+       
     }
+    
+    private IEnumerator SetPlayerSpawnPositionNextFrame(GameObject player, Vector3 position)
+    {
+        yield return null; // Wait one frame
+        player.GetComponent<PlayerController>().spawnPosition.Value = position;
+    }
+
+    
+
 }
