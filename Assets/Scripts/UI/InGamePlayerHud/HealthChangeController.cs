@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace UI
+namespace UI.InGamePlayerHud
 {
     public class HealthChangeController : MonoBehaviour
     {
@@ -19,13 +19,10 @@ namespace UI
 
         private VisualElement overlay;
         private Label livesLabel;
-        private PlayerHealth playerHealth;
-
+        
         private float baseFontSize;
         private Color baseColor;
-
-        private int lastHealth;
-
+        
         private bool flashActive;
         private float flashTimer;
         private float flashStartScale;
@@ -33,6 +30,9 @@ namespace UI
 
         private bool lowHealthActive;
         private float lowHealthPulseTime;
+        
+        // Logic reference, variables
+        private PlayerHealth playerHealth;
 
         private void Start()
         {
@@ -47,55 +47,36 @@ namespace UI
 
             baseFontSize = livesLabel.resolvedStyle.fontSize;
             baseColor = livesLabel.resolvedStyle.color;
+            
+        }
 
-            var gs = GameState.Instance;
-            gs.OnLocalPlayerSpawned += WireLocalPlayer;
-
-            if (!gs.PlayerRef) return;
-            var existingHealth = gs.PlayerRef.GetComponent<PlayerHealth>();
-            if (existingHealth != null)
-            {
-                WireLocalPlayer(existingHealth);
-            }
+        public void BindPlayer(GameObject player)
+        {
+            playerHealth = player.GetComponent<PlayerHealth>();
+            playerHealth.currentHealth.OnValueChanged += HandleHealthChanged;
+            UpdateLowHealthState(playerHealth.currentHealth.Value);
         }
 
         private void OnDestroy()
-        {
-            GameState.Instance.OnLocalPlayerSpawned -= WireLocalPlayer;
-            playerHealth.OnHealthChanged -= HandleHealthChanged;
+        { 
+            playerHealth.currentHealth.OnValueChanged -= HandleHealthChanged;
         }
-
-        private void WireLocalPlayer(PlayerHealth health)
+        
+        private void HandleHealthChanged(int oldHealthValue,int newHealthValue)
         {
-            if (playerHealth)
-            {
-                playerHealth.OnHealthChanged -= HandleHealthChanged;
-            }
+            UpdateLowHealthState(newHealthValue);
 
-            playerHealth = health;
-            playerHealth.OnHealthChanged += HandleHealthChanged;
-
-            lastHealth = playerHealth.currentHealth.Value;
-            UpdateLowHealthState(playerHealth.currentHealth.Value, playerHealth.MaxHealth);
-        }
-
-        private void HandleHealthChanged(int current, int max)
-        {
-            UpdateLowHealthState(current, max);
-
-            if (current < lastHealth)
+            if (newHealthValue < oldHealthValue)
             {
                 StartFlash(damageColor, numberScale);
             }
-            else if (current > lastHealth)
+            else if (newHealthValue > oldHealthValue)
             {
                 StartFlash(healColor, numberScale);
             }
-
-            lastHealth = current;
         }
 
-        private void UpdateLowHealthState(int current, int max)
+        private void UpdateLowHealthState(int current)
         {
             bool lowHp = current == 1;
 

@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using JetBrains.Annotations;
+using UI.InGamePlayerHud;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -60,8 +61,7 @@ public class PlayerController : NetworkBehaviour
         placeBombAction = playerInput.actions["PlaceBomb"];
         animator = GetComponentInChildren<Animator>();
         
-        GameState.Instance.RegisterPlayer(gameObject);
-        
+        InGamePlayerHudManager.Instance.BindPlayer(gameObject);
         
         NotifyBombSelectionChanged();
     }

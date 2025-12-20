@@ -44,7 +44,6 @@ public class BombExplode : NetworkBehaviour
                 gs.WorldToGrid(networkClient.PlayerObject.transform.position));
           
         }
-        var playerGridVec = gs.WorldToGrid(gs.PlayerRef.transform.position);
         var bombGridVec = gs.WorldToGrid(transform.position);
 
         Vector2Int[] dirs =

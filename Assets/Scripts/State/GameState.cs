@@ -11,7 +11,6 @@ public class GameState : NetworkBehaviour
     public LevelBuilder LevelBuilder;
 
     public GridTile[,] Grid { get; private set; }
-    public GameObject PlayerRef { get; set; }
     public List<PlayerSpawn> PlayerSpawns { get; private set; }
 
     [SerializeField] private float cellSize = 2f;
@@ -19,7 +18,6 @@ public class GameState : NetworkBehaviour
 
     public int ArenaWidth { get; private set; }
     public int ArenaHeight { get; private set; }
-    public event Action<PlayerHealth> OnLocalPlayerSpawned;
     
     
     private string defaultMap = @"
@@ -47,6 +45,8 @@ public class GameState : NetworkBehaviour
 
     private void Start()
     {
+        if (!IsServer) return;
+        
         {
             if (Instance && Instance != this)
             {
@@ -70,73 +70,65 @@ public class GameState : NetworkBehaviour
 
     private void Load(string mapData)
     {
-        if (IsServer)
+        if (!IsServer) return;
+
+        var lines = mapData.Split('\n');
+        var validLines = lines
+            .Select(l => l.Trim())
+            .Where(l => !string.IsNullOrEmpty(l))
+            .ToList();
+
+        ArenaHeight = validLines.Count;
+        ArenaWidth = validLines[0].Length;
+
+        if (validLines.Any(l => l.Length != ArenaWidth))
         {
-            var lines = mapData.Split('\n');
-            var validLines = lines
-                .Select(l => l.Trim())
-                .Where(l => !string.IsNullOrEmpty(l))
-                .ToList();
+            Debug.LogError("Map data is inconsistent");
+            return;
+        }
 
-            ArenaHeight = validLines.Count;
-            ArenaWidth = validLines[0].Length;
+        Grid = new GridTile[ArenaWidth, ArenaHeight];
+        PlayerSpawns = new List<PlayerSpawn>();
 
-            if (validLines.Any(l => l.Length != ArenaWidth))
+        for (var y = 0; y < ArenaHeight; y++)
+        {
+            var line = validLines[y];
+
+            for (var x = 0; x < ArenaWidth; x++)
             {
-                Debug.LogError("Map data is inconsistent");
-                return;
-            }
+                var c = line[x];
 
-            Grid = new GridTile[ArenaWidth, ArenaHeight];
-            PlayerSpawns = new List<PlayerSpawn>();
-
-            for (var y = 0; y < ArenaHeight; y++)
-            {
-                var line = validLines[y];
-
-                for (var x = 0; x < ArenaWidth; x++)
+                switch (c)
                 {
-                    var c = line[x];
+                    case 'X':
+                        Grid[x, y] = new GridTile(WallType.WallIndestructible);
+                        break;
 
-                    switch (c)
-                    {
-                        case 'X':
-                            Grid[x, y] = new GridTile(WallType.WallIndestructible);
-                            break;
+                    case 'W':
+                        Grid[x, y] = new GridTile(WallType.WallDestructible);
+                        break;
 
-                        case 'W':
-                            Grid[x, y] = new GridTile(WallType.WallDestructible);
-                            break;
+                    case 'P':
+                        PlayerSpawns.Add(new PlayerSpawn(x, y));
+                        Grid[x, y] = new GridTile(WallType.Empty);
+                        break;
 
-                        case 'P':
-                            PlayerSpawns.Add(new PlayerSpawn(x, y));
-                            Grid[x, y] = new GridTile(WallType.Empty);
-                            break;
+                    case 'O':
+                    case ' ':
+                        Grid[x, y] = new GridTile(WallType.Empty);
+                        break;
 
-                        case 'O':
-                        case ' ':
-                            Grid[x, y] = new GridTile(WallType.Empty);
-                            break;
-
-                        default:
-                            Debug.LogWarning($"Neznámy znak '{c}' na pozícii [{x},{y}]");
-                            Grid[x, y] = new GridTile(WallType.Empty);
-                            break;
-                    }
+                    default:
+                        Debug.LogWarning($"Neznámy znak '{c}' na pozícii [{x},{y}]");
+                        Grid[x, y] = new GridTile(WallType.Empty);
+                        break;
                 }
             }
-            
-            LevelBuilder.BuildLevel();
-            
         }
+
+        LevelBuilder.BuildLevel();
     }
     
-    public void RegisterPlayer(GameObject player)
-    {
-        PlayerRef = player;
-        var health = player.GetComponent<PlayerHealth>(); 
-        OnLocalPlayerSpawned?.Invoke(health);
-    }
 
     public Vector2Int WorldToGrid(Vector3 worldPos)
     {
