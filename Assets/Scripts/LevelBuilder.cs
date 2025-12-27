@@ -9,11 +9,11 @@ public class LevelBuilder : NetworkBehaviour
     [SerializeField] private GameObject wallIndestructiblePrefab;
     [SerializeField] private GameObject wallDestructiblePrefab;
 
-    private GameState state;
+    private GameState _state;
 
     public void ParseMapData(string mapData)
     {
-        state = GameState.Instance;
+        _state = GameState.Instance;
 
         var lines = mapData.Split('\n');
         var validLines = lines
@@ -21,49 +21,49 @@ public class LevelBuilder : NetworkBehaviour
             .Where(l => !string.IsNullOrEmpty(l))
             .ToList();
 
-        state.ArenaHeight = validLines.Count;
-        state.ArenaWidth = validLines[0].Length;
+        _state.ArenaHeight = validLines.Count;
+        _state.ArenaWidth = validLines[0].Length;
 
-        if (validLines.Any(l => l.Length != state.ArenaWidth))
+        if (validLines.Any(l => l.Length != _state.ArenaWidth))
         {
             Debug.LogError("Map data is inconsistent");
             return;
         }
 
-        state.Grid = new GridTile[state.ArenaWidth, state.ArenaHeight];
+        _state.Grid = new GridTile[_state.ArenaWidth, _state.ArenaHeight];
 
 
-        for (var y = 0; y < state.ArenaHeight; y++)
+        for (var y = 0; y < _state.ArenaHeight; y++)
         {
             var line = validLines[y];
 
-            for (var x = 0; x < state.ArenaWidth; x++)
+            for (var x = 0; x < _state.ArenaWidth; x++)
             {
                 var c = line[x];
 
                 switch (c)
                 {
                     case 'X':
-                        state.Grid[x, y] = new GridTile(WallType.WallIndestructible);
+                        _state.Grid[x, y] = new GridTile(WallType.WallIndestructible);
                         break;
 
                     case 'W':
-                        state.Grid[x, y] = new GridTile(WallType.WallDestructible);
+                        _state.Grid[x, y] = new GridTile(WallType.WallDestructible);
                         break;
 
                     case 'P':
-                        state.PlayerSpawns.Add(new PlayerSpawn(x, y));
-                        state.Grid[x, y] = new GridTile(WallType.Empty);
+                        _state.PlayerSpawns.Add(new PlayerSpawn(x, y));
+                        _state.Grid[x, y] = new GridTile(WallType.Empty);
                         break;
 
                     case 'O':
                     case ' ':
-                        state.Grid[x, y] = new GridTile(WallType.Empty);
+                        _state.Grid[x, y] = new GridTile(WallType.Empty);
                         break;
 
                     default:
                         Debug.LogWarning($"Neznámy znak '{c}' na pozícii [{x},{y}]");
-                        state.Grid[x, y] = new GridTile(WallType.Empty);
+                        _state.Grid[x, y] = new GridTile(WallType.Empty);
                         break;
                 }
             }
@@ -75,13 +75,13 @@ public class LevelBuilder : NetworkBehaviour
 
     public void BuildLevel()
     {
-        float cellSize = state.CellSize;
+        float cellSize = GameState.CellSize;
 
-        for (int y = 0; y < state.ArenaHeight; y++)
+        for (int y = 0; y < _state.ArenaHeight; y++)
         {
-            for (int x = 0; x < state.ArenaWidth; x++)
+            for (int x = 0; x < _state.ArenaWidth; x++)
             {
-                GridTile tile = state.Grid[x, y];
+                GridTile tile = _state.Grid[x, y];
 
                 Vector3 worldPos = new Vector3(x * cellSize, 0f, y * cellSize);
 
@@ -109,7 +109,7 @@ public class LevelBuilder : NetworkBehaviour
         Vector3 p = pos + Vector3.up * 1f;
         GameObject go = Instantiate(wallIndestructiblePrefab, p, Quaternion.identity, transform);
         var no = go.GetComponent<NetworkObject>();
-        no.Spawn();
+        no.Spawn(true);
 
         WallBehaviour wb = go.GetComponent<WallBehaviour>() ?? go.GetComponentInChildren<WallBehaviour>();
         if (wb != null)
@@ -129,7 +129,7 @@ public class LevelBuilder : NetworkBehaviour
         Vector3 p = pos + Vector3.up * 1f;
         GameObject go = Instantiate(wallDestructiblePrefab, p, Quaternion.identity, transform);
         var no = go.GetComponent<NetworkObject>();
-        no.Spawn();
+        no.Spawn(true);
 
         WallBehaviour wb = go.GetComponent<WallBehaviour>() ?? go.GetComponentInChildren<WallBehaviour>();
         if (wb != null)

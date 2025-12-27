@@ -13,8 +13,7 @@ public class GameState : NetworkBehaviour
     public GridTile[,] Grid;
     public List<PlayerSpawn> PlayerSpawns = new List<PlayerSpawn>();
 
-    [SerializeField] private float cellSize = 2f;
-    public float CellSize => cellSize;
+    public static float CellSize = 2f;
 
     public int ArenaWidth;
     public int ArenaHeight;
@@ -49,6 +48,7 @@ public class GameState : NetworkBehaviour
 
     private void Start()
     {
+        
         if (!IsServer) return;
 
 
@@ -59,12 +59,16 @@ public class GameState : NetworkBehaviour
         }
 
         Instance = this;
-        DontDestroyOnLoad(gameObject);
 
         if (!IsServer) return;
         Load(defaultMap);
         NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
     }
+
+    public void OnDestroy()
+    {
+        NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+    } 
 
     private void OnClientConnected(ulong clientId)
     {
@@ -92,13 +96,13 @@ public class GameState : NetworkBehaviour
     public Vector2Int WorldToGrid(Vector3 worldPos)
     {
         return new Vector2Int(
-            Mathf.RoundToInt(worldPos.x / cellSize),
-            Mathf.RoundToInt(worldPos.z / cellSize));
+            Mathf.RoundToInt(worldPos.x / CellSize),
+            Mathf.RoundToInt(worldPos.z / CellSize));
     }
 
     public Vector3 GridToWorld(int gx, int gy)
     {
-        return new Vector3(gx * cellSize, 0f, gy * cellSize);
+        return new Vector3(gx * CellSize, 0f, gy * CellSize);
     }
 
     public GridTile GetTile(int x, int y)
@@ -174,6 +178,7 @@ public class GameState : NetworkBehaviour
         if (!IsServer) return;
 
         _playersInGame.Remove(player);
+        
         CheckEndGame();
     }
 

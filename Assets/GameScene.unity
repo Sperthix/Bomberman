@@ -130,6 +130,7 @@ GameObject:
   - component: {fileID: 50882397}
   - component: {fileID: 50882398}
   - component: {fileID: 50882396}
+  - component: {fileID: 50882399}
   m_Layer: 0
   m_Name: GameState
   m_TagString: Untagged
@@ -152,7 +153,8 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   LevelBuilder: {fileID: 422813932}
   PlayerSpawns: []
-  cellSize: 2
+  ArenaWidth: 0
+  ArenaHeight: 0
   playerPrefab: {fileID: 1789242652558074013, guid: 81fd9e7f3822f9c58a12838ac3e2d819, type: 3}
 --- !u!4 &50882397
 Transform:
@@ -194,6 +196,20 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!114 &50882399
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 50882395}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f01b9850a3591fcf905c11dd6495b4f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameStateServerAPI
+  ShowTopMostFoldoutHeaderGroup: 1
+  bombPrefab: {fileID: 4882525065325263492, guid: 27392193079a24f4ca5d384cb4698902, type: 3}
 --- !u!1 &108731625
 GameObject:
   m_ObjectHideFlags: 0

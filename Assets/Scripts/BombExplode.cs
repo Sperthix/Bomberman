@@ -61,8 +61,17 @@ public class BombExplode : NetworkBehaviour
 
         ExplodeInLine(bombGridVec, Vector2Int.zero, 1, playersGridVec);
 
+        StartCoroutine(DespawnAfterSeconds(1f));
+
         Destroy(gameObject,1f);
     }
+
+    private IEnumerator DespawnAfterSeconds(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        gameObject.GetComponent<NetworkObject>().Despawn(true);
+    }
+
 
     private void ExplodeInLine(Vector2Int explodeGridOrigin, Vector2Int dir, int rangeInDir, Dictionary<GameObject, Vector2Int> playersGridVec)
     {
@@ -117,21 +126,20 @@ public class BombExplode : NetworkBehaviour
     private IEnumerator DelayedSpawnVFX(Vector2Int tileVec, Vector2Int directionVec, float delay)
     {
         yield return new WaitForSeconds(delay);
-        SpawnExplosionVfxClientRpc(tileVec, directionVec);
+        var position = gs.GridToWorld(tileVec.x, tileVec.y);
+        position.y += 1f;
+        SpawnExplosionVfxClientRpc(position, directionVec);
     }
 
     
     [ClientRpc]
-    public void SpawnExplosionVfxClientRpc(Vector2Int vector2Int, Vector2Int directionVec)
+    public void SpawnExplosionVfxClientRpc(Vector3 position, Vector2Int directionVec)
     {
         Vector3 direction3D = new Vector3(directionVec.x, 0, directionVec.y);
         var rotation = Quaternion.LookRotation(direction3D);
 
-        var posVec = gs.GridToWorld(vector2Int.x, vector2Int.y);
-        posVec.y += 1f;
-
         var vfx = Instantiate(explosionVFXPrefab,
-            posVec, rotation);
+            position, rotation);
         Destroy(vfx, 1);
     }
     

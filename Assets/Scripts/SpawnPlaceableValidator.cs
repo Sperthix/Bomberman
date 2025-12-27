@@ -2,7 +2,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class SpawnPlaceableValidator : NetworkBehaviour
+public class SpawnPlaceableValidator : MonoBehaviour
 {
     private GameObject _playerRef;
     private PlayerController _playerControllerRef;
@@ -52,7 +52,7 @@ public class SpawnPlaceableValidator : NetworkBehaviour
         {
             if (isSpawnPlaceValid)
             {
-                PlaceBomb();
+                GameStateServerAPI.Instance.PlaceBombServerRpc(transform.position);
             }
 
             Destroy(gameObject);
@@ -127,7 +127,7 @@ public class SpawnPlaceableValidator : NetworkBehaviour
     public void Init(GameObject spawnPlayerRef)
     {
         var gs = GameState.Instance;
-        _maxPlacementDistance = (int)(gs.CellSize * 1.5);
+        _maxPlacementDistance = (int)(GameState.CellSize * 1.5);
             
         _playerRef = spawnPlayerRef;
 
@@ -140,21 +140,6 @@ public class SpawnPlaceableValidator : NetworkBehaviour
         _defaultMaterial = _renderer.material;
         _isInitialized = true;
     }
-
-    void PlaceBomb()
-    {
-        var hits = Physics.OverlapBox(transform.position, new Vector3(0.5f, 0.5f, 0.5f));
-        foreach (var hit in hits)
-        {
-            if (hit.gameObject.isStatic) continue;
-            if (hit.gameObject == gameObject) continue;
-            return;
-        }
-
-        var go = Instantiate(bombPrefab, transform.position, Quaternion.identity);
-        var no = go.GetComponent<NetworkObject>();
-        no.Spawn();
-        
-        Destroy(gameObject);
-    }
+    
+   
 }

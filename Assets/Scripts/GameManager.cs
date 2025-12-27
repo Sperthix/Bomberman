@@ -78,4 +78,5 @@ public class GameManager : NetworkBehaviour
         SetPhase(GamePhase.GameOver);
         Time.timeScale = 0f;
     }
+    
 }
