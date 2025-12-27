@@ -20,8 +20,6 @@ public class PlayerHealth : NetworkBehaviour
 
     private void Die()
     {
-        
         PlayerDied.Invoke(gameObject);
-        // GameManager.Instance.PlayerDied();
     }
 }
