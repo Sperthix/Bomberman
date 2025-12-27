@@ -16,7 +16,7 @@ public class GameManager : NetworkBehaviour
 
     public GamePhase Phase { get; set; } = GamePhase.MainMenu;
     private const String GameSceneName = "GameScene";
-    private const String EndGame = "EndGame";
+    public static String EndGame = "EndGame";
     private const String MenuSceneName = "MainMenuScene";
 
     public event Action<GamePhase> OnPhaseChanged;
@@ -68,9 +68,8 @@ public class GameManager : NetworkBehaviour
         SceneManager.LoadScene(MenuSceneName);
     }
     
-    public void PlayerDied()
+    public void GameOverPhase()
     {
-        NetworkManager.Singleton.SceneManager.LoadScene(EndGame, LoadSceneMode.Single);
         SetPhase(GamePhase.GameOver);
         Time.timeScale = 0f;
     }

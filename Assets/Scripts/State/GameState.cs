@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using State;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameState : NetworkBehaviour
 {
@@ -157,11 +158,34 @@ public class GameState : NetworkBehaviour
         _playerSpawnIndex++;
         var playerSpawnLoc = GridToWorld(spawn.X, spawn.Y);
         playerSpawnLoc.y += 1f;
+
         var player = Instantiate(playerPrefab, playerSpawnLoc, Quaternion.identity, transform);
+        _playersInGame.Add(player);
+        player.GetComponent<PlayerHealth>().PlayerDied += OnPlayerDied;
+
         NetworkObject networkObject = player.GetComponent<NetworkObject>();
         networkObject.SpawnAsPlayerObject(clientId, true);
+
         StartCoroutine(SetPlayerSpawnPositionNextFrame(player, playerSpawnLoc));
     }
+
+    private void OnPlayerDied(GameObject player)
+    {
+        if (!IsServer) return;
+
+        _playersInGame.Remove(player);
+        CheckEndGame();
+    }
+
+
+    private void CheckEndGame()
+    {
+        if (_playersInGame.Count == 0)
+        {
+            NetworkManager.Singleton.SceneManager.LoadScene(GameManager.EndGame, LoadSceneMode.Single);
+        }
+    }
+
 
     private IEnumerator SetPlayerSpawnPositionNextFrame(GameObject player, Vector3 position)
     {

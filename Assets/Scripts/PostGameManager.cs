@@ -19,6 +19,7 @@ public class PostGameManager : NetworkBehaviour
         Instance = this;
         
         PlayersVotedToRestart = new NetworkList<ulong>();
+        GameManager.Instance.GameOverPhase();
     }
 
     public override void OnNetworkSpawn()
