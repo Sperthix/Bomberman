@@ -151,7 +151,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameState
   ShowTopMostFoldoutHeaderGroup: 1
   LevelBuilder: {fileID: 422813932}
+  PlayerSpawns: []
   cellSize: 2
+  playerPrefab: {fileID: 1789242652558074013, guid: 81fd9e7f3822f9c58a12838ac3e2d819, type: 3}
 --- !u!4 &50882397
 Transform:
   m_ObjectHideFlags: 0
@@ -320,7 +322,6 @@ MonoBehaviour:
   floorPrefab: {fileID: 2794645888665000028, guid: 4c6e92d75ee30a7468629e5a2e66f883, type: 3}
   wallIndestructiblePrefab: {fileID: 2364436100679826612, guid: c81e32832437d714fb4157d37a982a71, type: 3}
   wallDestructiblePrefab: {fileID: 8235394160929668786, guid: b44048c773a26224e9a295e569e5829c, type: 3}
-  playerPrefab: {fileID: 1789242652558074013, guid: 81fd9e7f3822f9c58a12838ac3e2d819, type: 3}
 --- !u!114 &422813933
 MonoBehaviour:
   m_ObjectHideFlags: 0

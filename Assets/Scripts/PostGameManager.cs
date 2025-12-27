@@ -13,7 +13,7 @@ public class PostGameManager : NetworkBehaviour
         // Singleton enforcement
         if (Instance && Instance != this)
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
             return;
         }
         Instance = this;
@@ -35,7 +35,6 @@ public class PostGameManager : NetworkBehaviour
 
         PlayersVotedToRestart.Add(clientId);
 
-        // Check if all players want to restart
         if (PlayersVotedToRestart.Count >= NetworkManager.Singleton.ConnectedClientsIds.Count)
         {
             // todo restart game

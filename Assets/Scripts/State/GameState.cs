@@ -1,6 +1,5 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using State;
 using Unity.Netcode;
 using UnityEngine;
@@ -10,16 +9,20 @@ public class GameState : NetworkBehaviour
     public static GameState Instance { get; private set; }
     public LevelBuilder LevelBuilder;
 
-    public GridTile[,] Grid { get; private set; }
-    public List<PlayerSpawn> PlayerSpawns { get; private set; }
+    public GridTile[,] Grid;
+    public List<PlayerSpawn> PlayerSpawns = new List<PlayerSpawn>();
 
     [SerializeField] private float cellSize = 2f;
     public float CellSize => cellSize;
 
-    public int ArenaWidth { get; private set; }
-    public int ArenaHeight { get; private set; }
-    
-    
+    public int ArenaWidth;
+    public int ArenaHeight;
+
+    private List<GameObject> _playersInGame = new List<GameObject>();
+    [SerializeField] private GameObject playerPrefab;
+    private int _playerSpawnIndex = 0;
+
+
     private string defaultMap = @"
         XXXXXXXXXXXXXXXXXXXX
         XPOPWOWOOOWOWOOOWOOX
@@ -46,21 +49,25 @@ public class GameState : NetworkBehaviour
     private void Start()
     {
         if (!IsServer) return;
-        
+
+
+        if (Instance && Instance != this)
         {
-            if (Instance && Instance != this)
-            {
-                Destroy(gameObject);
-                return;
-            }
-
-            Instance = this;
-            DontDestroyOnLoad(gameObject);
-
-            if (!IsServer) return;
-            Load(defaultMap);
-            
+            Destroy(gameObject);
+            return;
         }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+
+        if (!IsServer) return;
+        Load(defaultMap);
+        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+    }
+
+    private void OnClientConnected(ulong clientId)
+    {
+        SpawnPlayer(clientId);
     }
 
     public void restartToDefaultMap()
@@ -72,63 +79,14 @@ public class GameState : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        var lines = mapData.Split('\n');
-        var validLines = lines
-            .Select(l => l.Trim())
-            .Where(l => !string.IsNullOrEmpty(l))
-            .ToList();
+        LevelBuilder.ParseMapData(mapData);
 
-        ArenaHeight = validLines.Count;
-        ArenaWidth = validLines[0].Length;
-
-        if (validLines.Any(l => l.Length != ArenaWidth))
+        foreach (var clientId in NetworkManager.Singleton.ConnectedClientsIds)
         {
-            Debug.LogError("Map data is inconsistent");
-            return;
+            SpawnPlayer(clientId);
         }
-
-        Grid = new GridTile[ArenaWidth, ArenaHeight];
-        PlayerSpawns = new List<PlayerSpawn>();
-
-        for (var y = 0; y < ArenaHeight; y++)
-        {
-            var line = validLines[y];
-
-            for (var x = 0; x < ArenaWidth; x++)
-            {
-                var c = line[x];
-
-                switch (c)
-                {
-                    case 'X':
-                        Grid[x, y] = new GridTile(WallType.WallIndestructible);
-                        break;
-
-                    case 'W':
-                        Grid[x, y] = new GridTile(WallType.WallDestructible);
-                        break;
-
-                    case 'P':
-                        PlayerSpawns.Add(new PlayerSpawn(x, y));
-                        Grid[x, y] = new GridTile(WallType.Empty);
-                        break;
-
-                    case 'O':
-                    case ' ':
-                        Grid[x, y] = new GridTile(WallType.Empty);
-                        break;
-
-                    default:
-                        Debug.LogWarning($"Neznámy znak '{c}' na pozícii [{x},{y}]");
-                        Grid[x, y] = new GridTile(WallType.Empty);
-                        break;
-                }
-            }
-        }
-
-        LevelBuilder.BuildLevel();
     }
-    
+
 
     public Vector2Int WorldToGrid(Vector3 worldPos)
     {
@@ -151,7 +109,7 @@ public class GameState : NetworkBehaviour
     {
         return GetTile(pos.x, pos.y);
     }
-    
+
     private bool IsInsideGrid(int x, int y)
     {
         return x >= 0 && x < ArenaWidth && y >= 0 && y < ArenaHeight;
@@ -189,5 +147,25 @@ public class GameState : NetworkBehaviour
         if (tile == null || tile.Wall != wall) return;
         tile.Type = WallType.Empty;
         tile.Wall = null;
+    }
+
+
+    private void SpawnPlayer(ulong clientId)
+    {
+        // later we should have lobby and assign spawns on players 
+        var spawn = PlayerSpawns[_playerSpawnIndex % PlayerSpawns.Count];
+        _playerSpawnIndex++;
+        var playerSpawnLoc = GridToWorld(spawn.X, spawn.Y);
+        playerSpawnLoc.y += 1f;
+        var player = Instantiate(playerPrefab, playerSpawnLoc, Quaternion.identity, transform);
+        NetworkObject networkObject = player.GetComponent<NetworkObject>();
+        networkObject.SpawnAsPlayerObject(clientId, true);
+        StartCoroutine(SetPlayerSpawnPositionNextFrame(player, playerSpawnLoc));
+    }
+
+    private IEnumerator SetPlayerSpawnPositionNextFrame(GameObject player, Vector3 position)
+    {
+        yield return null; // Wait one frame
+        player.GetComponent<PlayerController>().spawnPosition.Value = position;
     }
 }
