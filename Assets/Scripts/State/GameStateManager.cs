@@ -180,7 +180,13 @@ public class GameState : NetworkBehaviour
 
     private void CheckEndGame()
     {
-        if (_playersInGame.Count == 0)
+        var minPlayerCount = 0;
+        if (GameManager.Instance.isMultiplayer.Value)
+        {
+            minPlayerCount = 1;
+        }
+
+        if (_playersInGame.Count <= minPlayerCount)
         {
             NetworkManager.Singleton.SceneManager.LoadScene(GameManager.EndGame, LoadSceneMode.Single);
         }

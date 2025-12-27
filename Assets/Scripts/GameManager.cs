@@ -13,6 +13,7 @@ public enum GamePhase
 public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance { get; set; }
+    public NetworkVariable<bool> isMultiplayer = new NetworkVariable<bool>(false);
 
     public GamePhase Phase { get; set; } = GamePhase.MainMenu;
     private const String GameSceneName = "GameScene";
@@ -57,7 +58,11 @@ public class GameManager : NetworkBehaviour
         
         Time.timeScale = 1f;
         SetPhase(GamePhase.Playing);
-        if (isHost) NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
+        if (isHost)
+        {
+            NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
+            isMultiplayer.Value = true;
+        }
     }
     
 
