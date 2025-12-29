@@ -38,7 +38,13 @@ public class PostGameManager : NetworkBehaviour
 
         if (PlayersVotedToRestart.Count >= NetworkManager.Singleton.ConnectedClientsIds.Count)
         {
-            // todo restart game
+            RestartGameClientRpc();
         }
+    }
+    
+    [ClientRpc]
+    public void RestartGameClientRpc()
+    {
+        GameManager.Instance.StartMultiPlayerGame(NetworkManager.Singleton.IsHost);
     }
 }
