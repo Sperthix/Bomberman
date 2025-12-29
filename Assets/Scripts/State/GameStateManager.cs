@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using State;
 using Unity.Netcode;
@@ -18,12 +17,14 @@ public class GameStateManager : NetworkBehaviour
     public int ArenaWidth;
     public int ArenaHeight;
 
-    private List<GameObject> _playersInGame = new List<GameObject>();
+    private List<GameObject> _playersInGame = new();
+    private Dictionary<ulong, int> _playerSpawnMap = new();
     [SerializeField] private GameObject playerPrefab;
-    private int _playerSpawnIndex = 0;
+    private int _playerSpawnIndex;
 
     
 
+    
     private string defaultMap = @"
         XXXXXXXXXXXXXXXXXXXX
         XPOPWOWOOOWOWOOOWOOX
@@ -159,19 +160,14 @@ public class GameStateManager : NetworkBehaviour
     private void SpawnPlayer(ulong clientId)
     {
         // later we should have lobby and assign spawns on players 
-        var spawn = PlayerSpawns[_playerSpawnIndex % PlayerSpawns.Count];
+        _playerSpawnMap[clientId] = _playerSpawnIndex;
         _playerSpawnIndex++;
-        var playerSpawnLoc = GridToWorld(spawn.X, spawn.Y);
-        playerSpawnLoc.y += 1f;
-
-        var player = Instantiate(playerPrefab, playerSpawnLoc, Quaternion.identity, transform);
-        _playersInGame.Add(player);
+        
+        var player = Instantiate(playerPrefab, Vector3.zero, Quaternion.identity, transform);
         player.GetComponent<PlayerHealth>().PlayerDied += OnPlayerDied;
 
         NetworkObject networkObject = player.GetComponent<NetworkObject>();
         networkObject.SpawnAsPlayerObject(clientId, true);
-
-        StartCoroutine(SetPlayerSpawnPositionNextFrame(player, playerSpawnLoc));
     }
 
     private void OnPlayerDied(GameObject player)
@@ -198,10 +194,16 @@ public class GameStateManager : NetworkBehaviour
         }
     }
 
+    
 
-    private IEnumerator SetPlayerSpawnPositionNextFrame(GameObject player, Vector3 position)
+    public void RegisterLoadedClientPlayer(ulong clientId)
     {
-        yield return null; // Wait one frame
-        player.GetComponent<PlayerController>().spawnPosition.Value = position;
+        var player = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.gameObject;
+        _playersInGame.Add(player);
+
+        var spawn = PlayerSpawns[_playerSpawnMap[clientId]];
+        var playerSpawnLoc = GridToWorld(spawn.X, spawn.Y);
+        playerSpawnLoc.y += 1f;
+        player.GetComponent<PlayerController>().spawnPosition.Value = playerSpawnLoc;
     }
 }

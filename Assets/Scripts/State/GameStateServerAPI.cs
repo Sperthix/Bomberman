@@ -1,5 +1,4 @@
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameStateServerAPI : NetworkBehaviour
@@ -30,6 +29,12 @@ public class GameStateServerAPI : NetworkBehaviour
         var no = go.GetComponent<NetworkObject>();
         no.Spawn(true);
         
+    }
+    
+    [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
+    public void ClientPlayerSpawnedServerRpc(RpcParams rpcParams = default)
+    {
+      GameStateManager.Instance.RegisterLoadedClientPlayer(rpcParams.Receive.SenderClientId);
     }
 
 

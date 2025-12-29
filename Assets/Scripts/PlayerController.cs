@@ -39,15 +39,8 @@ public class PlayerController : NetworkBehaviour
 
     void Start()
     {
-        spawnPosition.OnValueChanged += (_, newValue) =>
-        {
-            transform.position = newValue;
-        };
-        transform.position = spawnPosition.Value;
-        
-       
         PlayerCamera = GetComponentInChildren<Camera>();
-       
+        
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
         if (!IsOwner)
@@ -56,6 +49,15 @@ public class PlayerController : NetworkBehaviour
             playerInput.enabled = false;
             return;
         }
+        
+        spawnPosition.OnValueChanged += (_, newValue) =>
+        {
+            if (!IsOwner) return;
+            characterController.enabled = false;
+            transform.position = newValue;
+            characterController.enabled = true;
+        };
+        
         moveAction = playerInput.actions["Move"];
         lookAction = playerInput.actions["Look"];
         placeBombAction = playerInput.actions["PlaceBomb"];
@@ -64,6 +66,8 @@ public class PlayerController : NetworkBehaviour
         InGamePlayerHudManager.Instance.BindPlayer(gameObject);
         
         NotifyBombSelectionChanged();
+        
+        GameStateServerAPI.Instance.ClientPlayerSpawnedServerRpc();
     }
 
     void Update()
