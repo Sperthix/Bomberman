@@ -14,18 +14,18 @@ public class WallBehaviour : MonoBehaviour
         Y = y;
         Type = type;
 
-        GameState.Instance.RegisterWall(x, y, this);
+        GameStateManager.Instance.RegisterWall(x, y, this);
     }
 
     public void HitByExplosion()
     {
         if (Type != WallType.WallDestructible) return;
-        GameState.Instance.UnregisterWall(X, Y, this);
+        GameStateManager.Instance.UnregisterWall(X, Y, this);
         Destroy(gameObject);
     }
 
     private void OnDestroy()
     {
-        GameState.Instance.UnregisterWall(X, Y, this);
+        GameStateManager.Instance.UnregisterWall(X, Y, this);
     }
 }

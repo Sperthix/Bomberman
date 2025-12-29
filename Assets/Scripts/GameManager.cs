@@ -43,9 +43,9 @@ public class GameManager : NetworkBehaviour
     
     public void StartSinglePlayerGame()
     {
-        if (GameState.Instance)
+        if (GameStateManager.Instance)
         {
-            GameState.Instance.restartToDefaultMap();
+            GameStateManager.Instance.restartToDefaultMap();
         }
         
         Time.timeScale = 1f;

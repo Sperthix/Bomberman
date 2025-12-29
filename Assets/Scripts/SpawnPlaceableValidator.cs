@@ -126,8 +126,8 @@ public class SpawnPlaceableValidator : MonoBehaviour
 
     public void Init(GameObject spawnPlayerRef)
     {
-        var gs = GameState.Instance;
-        _maxPlacementDistance = (int)(GameState.CellSize * 1.5);
+        var gs = GameStateManager.Instance;
+        _maxPlacementDistance = (int)(GameStateManager.CellSize * 1.5);
             
         _playerRef = spawnPlayerRef;
 

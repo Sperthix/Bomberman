@@ -5,9 +5,9 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameState : NetworkBehaviour
+public class GameStateManager : NetworkBehaviour
 {
-    public static GameState Instance { get; private set; }
+    public static GameStateManager Instance { get; private set; }
     public LevelBuilder LevelBuilder;
 
     public GridTile[,] Grid;
@@ -22,6 +22,7 @@ public class GameState : NetworkBehaviour
     [SerializeField] private GameObject playerPrefab;
     private int _playerSpawnIndex = 0;
 
+    
 
     private string defaultMap = @"
         XXXXXXXXXXXXXXXXXXXX

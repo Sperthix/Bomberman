@@ -14,11 +14,11 @@ public class BombExplode : NetworkBehaviour
     public GameObject explosionVFXPrefab;
     
     private AudioSource _audioSource;
-    private GameState gs;
+    private GameStateManager gs;
 
     private void Start()
     {
-        gs = GameState.Instance;
+        gs = GameStateManager.Instance;
         _audioSource = GetComponent<AudioSource>();
         if (IsServer)
         {
