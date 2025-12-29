@@ -18,7 +18,6 @@ namespace UI.InGamePlayerHud
             }
 
             Instance = this;
-            DontDestroyOnLoad(gameObject);
         }
 
         private void OnDestroy()
