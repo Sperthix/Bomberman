@@ -68,6 +68,7 @@ public class GameManager : NetworkBehaviour
 
     public void BackToMainMenu()
     {
+        NetworkManager.Singleton.Shutdown(true);
         Time.timeScale = 1f;
         SetPhase(GamePhase.MainMenu);
         SceneManager.LoadScene(MenuSceneName);

@@ -6,10 +6,10 @@ public class EndGameUIManager : MonoBehaviour
 {
     public static EndGameUIManager Instance { get; private set; }
 
-    private Button quitButton;
-    private Button PlayAgainButton;
+    private Button _quitButton;
+    private Button _playAgainButton;
 
-    private PostGameManager postGameManager;
+    private PostGameManager _postGameManager;
 
 
     void Awake()
@@ -28,27 +28,32 @@ public class EndGameUIManager : MonoBehaviour
         var uiDoc = GetComponent<UIDocument>();
         var root = uiDoc.rootVisualElement;
 
-        quitButton = root.Q<Button>("quit");
-        PlayAgainButton = root.Q<Button>("play-again");
-        postGameManager = PostGameManager.Instance;
+        _quitButton = root.Q<Button>("quit");
+        _playAgainButton = root.Q<Button>("play-again");
+        _postGameManager = PostGameManager.Instance;
         BindUI();
-        UpdatePlayAgainButtonText();
     }
 
     private void BindUI()
     {
-        postGameManager.PlayersVotedToRestart.OnListChanged += HandlePlayersVotedToRestartChanged;
-        PlayAgainButton.clicked += PlayAgainButton_clicked;
+        _postGameManager.PlayersToVote.OnListChanged += HandlePlayersVotedToRestartChanged;
+        _playAgainButton.clicked += PlayAgainButton_clicked;
+        _quitButton.clicked += QuitButton_clicked;
+    }
+
+    private void QuitButton_clicked()
+    {
+        GameManager.Instance.BackToMainMenu();
     }
 
     private void PlayAgainButton_clicked()
     {
-        postGameManager.RequestPlayAgainRpc();
+        _postGameManager.RequestPlayAgainRpc();
     }
 
     private void OnDestroy()
     {
-        postGameManager.PlayersVotedToRestart.OnListChanged -= HandlePlayersVotedToRestartChanged;
+        _postGameManager.PlayersVotedToRestart.OnListChanged -= HandlePlayersVotedToRestartChanged;
     }
 
     private void HandlePlayersVotedToRestartChanged(NetworkListEvent<ulong> changeEvent)
@@ -58,8 +63,10 @@ public class EndGameUIManager : MonoBehaviour
 
     private void UpdatePlayAgainButtonText()
     {
-        int totalPlayers = NetworkManager.Singleton.ConnectedClientsIds.Count;
-        int votes = postGameManager.PlayersVotedToRestart.Count;
-        PlayAgainButton.text = $"Play Again ({votes}/{totalPlayers})";
+        int waitingToVote = _postGameManager.PlayersToVote.Count;
+        int voted = _postGameManager.PlayersVotedToRestart.Count;
+        _playAgainButton.text = $"Play Again {voted}/{waitingToVote + voted}";
     }
+
+
 }
