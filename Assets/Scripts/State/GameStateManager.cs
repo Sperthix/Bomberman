@@ -21,6 +21,8 @@ public class GameStateManager : NetworkBehaviour
     private Dictionary<ulong, int> _playerSpawnMap = new();
     [SerializeField] private GameObject playerPrefab;
     private int _playerSpawnIndex;
+    
+    private NetworkManager _networkManager;
 
     
 
@@ -61,15 +63,19 @@ public class GameStateManager : NetworkBehaviour
         }
 
         Instance = this;
-
+        _networkManager = NetworkManager.Singleton;
+        
         if (!IsServer) return;
         Load(defaultMap);
-        NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
+        _networkManager.OnClientConnectedCallback += OnClientConnected;
     }
 
     public void OnDestroy()
     {
-        NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+        if (_networkManager)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+        }
     } 
 
     private void OnClientConnected(ulong clientId)
