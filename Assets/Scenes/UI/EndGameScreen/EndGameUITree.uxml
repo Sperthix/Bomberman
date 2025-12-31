@@ -3,6 +3,6 @@
     <ui:VisualElement name="VisualElement" class="game-over-screen" style="flex-grow: 1; background-image: url(&quot;project://database/Assets/Scenes/UI/EndGameScreen/peakpx.jpg?fileID=2800000&amp;guid=21808134111a7e848b66bc0d8e902497&amp;type=3#peakpx&quot;);">
         <ui:Label text="Game Over" class="menu-title" />
         <ui:Button text="Play Again 0/2" name="play-again" class="menu-btn" style="-unity-text-align: middle-center; justify-content: flex-start;" />
-        <ui:Button text="Quit&#10;" name="quit" class="menu-btn" style="-unity-text-align: middle-center; justify-content: flex-start;" />
+        <ui:Button text="Leave to Menu" name="quit" class="menu-btn" style="-unity-text-align: middle-center; justify-content: flex-start;" />
     </ui:VisualElement>
 </ui:UXML>
