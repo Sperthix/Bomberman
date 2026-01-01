@@ -26,6 +26,7 @@ public class PlayerController : NetworkBehaviour
     private InputAction moveAction;
     private InputAction lookAction;
     private InputAction placeBombAction;
+    private InputAction abilitySelectedAction;
 
     private Animator animator;
     
@@ -61,6 +62,7 @@ public class PlayerController : NetworkBehaviour
         moveAction = playerInput.actions["Move"];
         lookAction = playerInput.actions["Look"];
         placeBombAction = playerInput.actions["PlaceBomb"];
+        abilitySelectedAction = playerInput.actions["AbilitySelected"];
         animator = GetComponentInChildren<Animator>();
         
         InGamePlayerHudManager.Instance.BindPlayer(gameObject);
@@ -91,12 +93,10 @@ public class PlayerController : NetworkBehaviour
 
     private void HandleBombSelection()
     {
-        var keyboard = Keyboard.current;
-        if (keyboard == null) return;
+        if (!abilitySelectedAction.WasPressedThisFrame()) return; 
+        var abilitySelected = (int)abilitySelectedAction.ReadValue<float>();
         
-        if (keyboard.digit1Key.wasPressedThisFrame) SetBombIndex(0);
-        if (keyboard.digit2Key.wasPressedThisFrame) SetBombIndex(1);
-        if (keyboard.digit3Key.wasPressedThisFrame) SetBombIndex(2);
+        SetBombIndex(abilitySelected);
     }
 
     private void SetBombIndex(int index)
