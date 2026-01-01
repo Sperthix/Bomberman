@@ -1,3 +1,4 @@
+using PlayerComponents;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -8,7 +9,7 @@ namespace UI.InGamePlayerHud
         private Label livesLabel;
         
         private PlayerHealth playerHealth;
-        private PlayerController playerController;
+        private PlayerInventory _playerInventory;
         
         private VisualElement[] slots;
 
@@ -32,14 +33,14 @@ namespace UI.InGamePlayerHud
             playerHealth.currentHealth.OnValueChanged += HandleHealthChanged;
             HandleHealthChanged(0,playerHealth.currentHealth.Value);
             
-            playerController = player.GetComponent<PlayerController>();
-            playerController.OnBombSelectionChanged += HandleBombSelectionChanged;
+            _playerInventory = player.GetComponent<PlayerInventory>();
+            _playerInventory.OnAbilitySelectionChanged += HandleAbilitySelectionChanged;
         }
 
         private void OnDestroy()
         {
             playerHealth.currentHealth.OnValueChanged -= HandleHealthChanged;
-            playerController.OnBombSelectionChanged -= HandleBombSelectionChanged;
+            _playerInventory.OnAbilitySelectionChanged -= HandleAbilitySelectionChanged;
         }
         
         private void HandleHealthChanged(int _ ,int current)
@@ -47,7 +48,7 @@ namespace UI.InGamePlayerHud
             livesLabel.text = $"Lives: {current}";
         }
 
-        private void HandleBombSelectionChanged(int currentIndex, int count)
+        private void HandleAbilitySelectionChanged(int currentIndex, int count)
         { 
             for (int i = 0; i < slots.Length; i++)
             {

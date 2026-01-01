@@ -248,6 +248,7 @@ GameObject:
   - component: {fileID: 5465153397188876517}
   - component: {fileID: 9103699361655421186}
   - component: {fileID: -2262498097089868427}
+  - component: {fileID: 3321912316068529662}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -309,7 +310,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 4075991583
+  GlobalObjectIdHash: 478284572
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -337,10 +338,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   walkSpeed: 15
   sensitivity: 10
-  bombPreviewPrefabs:
-  - {fileID: 4882525065325263492, guid: 3b964f3e978ee68bfab9226289379f10, type: 3}
-  - {fileID: 4882525065325263492, guid: 3b964f3e978ee68bfab9226289379f10, type: 3}
-  - {fileID: 4882525065325263492, guid: 3b964f3e978ee68bfab9226289379f10, type: 3}
   spawnPosition:
     m_InternalValue: {x: 0, y: 0, z: 0}
 --- !u!114 &7401891740467246049
@@ -455,6 +452,23 @@ MonoBehaviour:
   SwitchTransformSpaceWhenParented: 0
   Interpolate: 1
   SlerpPosition: 0
+--- !u!114 &3321912316068529662
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1789242652558074013}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3fc86f74a9a121b47a1896b3fdcd9828, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInventory
+  ShowTopMostFoldoutHeaderGroup: 1
+  bombPreviewPrefabs:
+  - {fileID: 4882525065325263492, guid: 3b964f3e978ee68bfab9226289379f10, type: 3}
+  - {fileID: 4882525065325263492, guid: 3b964f3e978ee68bfab9226289379f10, type: 3}
+  - {fileID: 4882525065325263492, guid: 3b964f3e978ee68bfab9226289379f10, type: 3}
 --- !u!1001 &922286427015888114
 PrefabInstance:
   m_ObjectHideFlags: 0

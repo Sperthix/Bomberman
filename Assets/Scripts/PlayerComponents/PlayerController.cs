@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using JetBrains.Annotations;
+using PlayerComponents;
 using UI.InGamePlayerHud;
 using Unity.Netcode;
 using UnityEngine;
@@ -14,14 +15,10 @@ public class PlayerController : NetworkBehaviour
     private const float MaxLookAngle = 80f;
     
     [CanBeNull] public PlayerPlaceableLookAtData PlaceableLookAtData;
-
-    public GameObject[] bombPreviewPrefabs;
-    public int SelectedBombPreviewIndex { get; private set; } = 0;
-
-    public event Action<int, int> OnBombSelectionChanged; // (currentIndex, totalCount)
-
+    
     private CharacterController characterController;
     private PlayerInput playerInput;
+    private PlayerInventory playerInventory;
     
     private InputAction moveAction;
     private InputAction lookAction;
@@ -64,11 +61,11 @@ public class PlayerController : NetworkBehaviour
         placeBombAction = playerInput.actions["PlaceBomb"];
         abilitySelectedAction = playerInput.actions["AbilitySelected"];
         animator = GetComponentInChildren<Animator>();
+        playerInventory = GetComponent<PlayerInventory>();
         
         InGamePlayerHudManager.Instance.BindPlayer(gameObject);
         
-        NotifyBombSelectionChanged();
-        
+        // must be last to notify server about the local player is ready
         GameStateServerAPI.Instance.ClientPlayerSpawnedServerRpc();
     }
 
@@ -78,7 +75,7 @@ public class PlayerController : NetworkBehaviour
         HandleMovement();
         HandleLook();
         UpdatePlacementLookAtData();
-        HandleBombSelection();
+        HandleAbilityBarSelection();
         HandleBombPlacement();
     }
 
@@ -86,33 +83,18 @@ public class PlayerController : NetworkBehaviour
     {
         if (placeBombAction.WasPressedThisFrame())
         {
-            var bombPreview = Instantiate(bombPreviewPrefabs[SelectedBombPreviewIndex], transform.position + (transform.forward * 1f), Quaternion.identity);
-            bombPreview.GetComponent<SpawnPlaceableValidator>().Init(this.gameObject);
+            playerInventory.HandleUseAbility();
         }
     }
 
-    private void HandleBombSelection()
+    private void HandleAbilityBarSelection()
     {
         if (!abilitySelectedAction.WasPressedThisFrame()) return; 
         var abilitySelected = (int)abilitySelectedAction.ReadValue<float>();
         
-        SetBombIndex(abilitySelected);
+        playerInventory.HandleAbilityActionEvent(abilitySelected);
     }
-
-    private void SetBombIndex(int index)
-    {
-        if (bombPreviewPrefabs == null || bombPreviewPrefabs.Length == 0) return;
-        if (index < 0 || index >= bombPreviewPrefabs.Length) return;
-        if (index == SelectedBombPreviewIndex) return;
-
-        SelectedBombPreviewIndex = index;
-        NotifyBombSelectionChanged();
-    }
-
-    private void NotifyBombSelectionChanged()
-    {
-        OnBombSelectionChanged?.Invoke(SelectedBombPreviewIndex, bombPreviewPrefabs?.Length ?? 0);
-    }
+  
 
     private void HandleMovement()
     {
