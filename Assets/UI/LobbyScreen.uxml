@@ -1,0 +1,16 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Lobby.uss?fileID=7433441132597879392&amp;guid=f0b8e04122b111a418a20f7ff5d345f8&amp;type=3#Lobby" />
+    <ui:VisualElement name="lobby-root" class="lobby-root">
+        <ui:Label text="Lobby" name="lobby-title" class="lobby-title" />
+        <ui:VisualElement name="players-panel" class="players-panel">
+            <ui:Label text="Connected players" name="players-title" class="players-title" />
+            <ui:ScrollView name="players-list" class="players-list" />
+        </ui:VisualElement>
+        <ui:VisualElement name="lobby-buttons" class="lobby-buttons">
+            <ui:Button text="Ready" name="btn-ready" class="lobby-btn secondary" />
+            <ui:Button text="Start" name="btn-start" class="lobby-btn" />
+            <ui:Button text="Back to Menu" name="btn-back" class="lobby-btn secondary" />
+        </ui:VisualElement>
+        <ui:Label name="lobby-hint" class="lobby-hint" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,80 @@
+.lobby-root {
+    position: absolute;
+    top: 0; bottom: 0; left: 0; right: 0;
+    background-color: rgba(0,0,0,0.85);
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 24px;
+}
+
+.lobby-title {
+    font-size: 40px;
+    color: white;
+    margin-bottom: 18px;
+}
+
+.players-panel {
+    width: 520px;
+    max-width: 90%;
+    background-color: rgba(20,20,20,0.9);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.players-title {
+    font-size: 18px;
+    color: #ddd;
+    margin-bottom: 10px;
+}
+
+.players-list {
+    height: 240px;
+}
+
+.player-row {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 6px;
+    border-radius: 8px;
+    background-color: rgba(0,0,0,0.35);
+}
+
+.player-row-label {
+    color: white;
+    font-size: 16px;
+}
+
+.player-row-status {
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+
+.player-row-status.ready {
+    color: #65ff8a;
+}
+
+.player-row-status.not-ready {
+    color: #ff6b6b;
+}
+
+.lobby-buttons {
+    flex-direction: row;
+}
+
+.lobby-btn {
+    width: 160px;
+    margin: 0 6px;
+}
+
+.lobby-btn.secondary {
+    opacity: 0.95;
+}
+
+.lobby-hint {
+    margin-top: 12px;
+    color: #bbb;
+}
