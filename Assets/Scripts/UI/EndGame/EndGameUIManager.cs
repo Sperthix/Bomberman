@@ -8,13 +8,11 @@ public class EndGameUIManager : MonoBehaviour
 
     private Button _quitButton;
     private Button _playAgainButton;
-
     private PostGameManager _postGameManager;
-
-
-    void Awake()
+    
+    private void Awake()
     {
-        if (Instance != null && Instance != this)
+        if (Instance && Instance != this)
         {
             Destroy(gameObject);
             return;
@@ -23,7 +21,7 @@ public class EndGameUIManager : MonoBehaviour
         Instance = this;
     }
 
-    void Start()
+    private void Start()
     {
         var uiDoc = GetComponent<UIDocument>();
         var root = uiDoc.rootVisualElement;
@@ -32,6 +30,7 @@ public class EndGameUIManager : MonoBehaviour
         _playAgainButton = root.Q<Button>("play-again");
         _postGameManager = PostGameManager.Instance;
         BindUI();
+        UpdatePlayAgainButtonText();
     }
 
     private void BindUI()
@@ -63,8 +62,8 @@ public class EndGameUIManager : MonoBehaviour
 
     private void UpdatePlayAgainButtonText()
     {
-        int waitingToVote = _postGameManager.PlayersToVote.Count;
-        int voted = _postGameManager.PlayersVotedToRestart.Count;
+        var waitingToVote = _postGameManager.PlayersToVote.Count;
+        var voted = _postGameManager.PlayersVotedToRestart.Count;
         _playAgainButton.text = $"Play Again {voted}/{waitingToVote + voted}";
     }
 
