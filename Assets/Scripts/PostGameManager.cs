@@ -69,6 +69,6 @@ public class PostGameManager : NetworkBehaviour
     [ClientRpc]
     public void RestartGameClientRpc()
     {
-        GameManager.Instance.StartMultiPlayerGame(NetworkManager.Singleton.IsHost);
+        GameManager.Instance.RestartGame();
     }
 }

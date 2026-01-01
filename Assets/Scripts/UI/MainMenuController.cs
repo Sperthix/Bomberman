@@ -88,9 +88,17 @@ namespace UI
             var btnMp   = screenRoot.Q<Button>("gamemode-selection-mp");
             var btnBack = screenRoot.Q<Button>("gamemode-selection-back");
 
-            btnSp.clicked += () => GameManager.Instance.StartSinglePlayerGame();
+            btnSp.clicked += StartSinglePlayerGame;
             btnMp.clicked += ShowMultiplayerSelection;
             btnBack.clicked += ShowMainMenu;
+        }
+
+        private void StartSinglePlayerGame()
+        {
+            NetworkManager.Singleton.OnServerStarted += () => { GameManager.Instance.StartGame(false); };
+            var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            transport.ConnectionData.Address = "127.0.0.1";
+            NetworkManager.Singleton.StartHost();
         }
 
         private void WireMultiplayerSelection(VisualElement screenRoot)
@@ -104,7 +112,7 @@ namespace UI
                 Debug.Log("Multiplayer: Host selected");
                 NetworkManager.Singleton.OnServerStarted += () =>
                 {
-                    GameManager.Instance.StartMultiPlayerGame(true);
+                    GameManager.Instance.StartGame(true);
                     
                 };
                 NetworkManager.Singleton.StartHost();
@@ -117,7 +125,7 @@ namespace UI
                 var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
                 transport.ConnectionData.Address = "127.0.0.1";
 
-                GameManager.Instance.StartMultiPlayerGame(false);
+                GameManager.Instance.StartGame(true);
                 NetworkManager.Singleton.StartClient();
             };
 

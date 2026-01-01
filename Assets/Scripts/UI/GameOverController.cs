@@ -35,12 +35,7 @@ namespace UI
         {
             gameOverScreen.style.display = phase == GamePhase.GameOver ? DisplayStyle.Flex : DisplayStyle.None;
         }
-
-        private static void OnRestartClicked()
-        {
-            GameManager.Instance.StartSinglePlayerGame();
-        }
-
+        
         private static void OnMainMenuClicked()
         {
             GameManager.Instance.BackToMainMenu();

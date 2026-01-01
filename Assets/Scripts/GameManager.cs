@@ -41,27 +41,19 @@ public class GameManager : NetworkBehaviour
         OnPhaseChanged?.Invoke(Phase);
     }
     
-    public void StartSinglePlayerGame()
+    public void StartGame(bool isMp)
     {
-        if (GameStateManager.Instance)
-        {
-            GameStateManager.Instance.restartToDefaultMap();
-        }
-        
-        Time.timeScale = 1f;
-        SetPhase(GamePhase.Playing);
-        SceneManager.LoadScene(GameSceneName);
+        isMultiplayer.Value = isMp;
+        RestartGame();
     }
-    
-    public void StartMultiPlayerGame(bool isHost)
+
+    public void RestartGame()
     {
-        
         Time.timeScale = 1f;
         SetPhase(GamePhase.Playing);
-        if (isHost)
+        if (IsHost)
         {
             NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
-            isMultiplayer.Value = true;
         }
     }
     

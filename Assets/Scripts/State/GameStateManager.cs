@@ -82,12 +82,7 @@ public class GameStateManager : NetworkBehaviour
     {
         SpawnPlayer(clientId);
     }
-
-    public void restartToDefaultMap()
-    {
-        Load(defaultMap);
-    }
-
+    
     private void Load(string mapData)
     {
         if (!IsServer) return;
