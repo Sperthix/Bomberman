@@ -1,3 +1,4 @@
+using State;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -127,7 +128,7 @@ public class SpawnPlaceableValidator : MonoBehaviour
     public void Init(GameObject spawnPlayerRef)
     {
         var gs = GameStateManager.Instance;
-        _maxPlacementDistance = (int)(GameStateManager.CellSize * 1.5);
+        _maxPlacementDistance = (int)(GridUtils.CellSize * 1.5);
             
         _playerRef = spawnPlayerRef;
 

@@ -41,10 +41,10 @@ public class BombExplode : NetworkBehaviour
         {
             playersGridVec.Add(
                 networkClient.PlayerObject.gameObject,
-                gs.WorldToGrid(networkClient.PlayerObject.transform.position));
+                GridUtils.WorldToGrid(networkClient.PlayerObject.transform.position));
           
         }
-        var bombGridVec = gs.WorldToGrid(transform.position);
+        var bombGridVec = GridUtils.WorldToGrid(transform.position);
 
         Vector2Int[] dirs =
         {
@@ -126,7 +126,7 @@ public class BombExplode : NetworkBehaviour
     private IEnumerator DelayedSpawnVFX(Vector2Int tileVec, Vector2Int directionVec, float delay)
     {
         yield return new WaitForSeconds(delay);
-        var position = gs.GridToWorld(tileVec.x, tileVec.y);
+        var position = GridUtils.GridToWorld(tileVec.x, tileVec.y);
         position.y += 1f;
         SpawnExplosionVfxClientRpc(position, directionVec);
     }

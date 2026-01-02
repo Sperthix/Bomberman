@@ -75,7 +75,7 @@ public class LevelBuilder : NetworkBehaviour
 
     public void BuildLevel()
     {
-        float cellSize = GameStateManager.CellSize;
+        float cellSize = GridUtils.CellSize;
 
         for (int y = 0; y < _stateManager.ArenaHeight; y++)
         {

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using State;
 using Unity.Netcode;
 using UnityEngine;
@@ -11,8 +12,6 @@ public class GameStateManager : NetworkBehaviour
 
     public GridTile[,] Grid;
     public List<PlayerSpawn> PlayerSpawns = new List<PlayerSpawn>();
-
-    public static float CellSize = 2f;
 
     public int ArenaWidth;
     public int ArenaHeight;
@@ -94,28 +93,10 @@ public class GameStateManager : NetworkBehaviour
             SpawnPlayer(clientId);
         }
     }
-
-
-    public Vector2Int WorldToGrid(Vector3 worldPos)
-    {
-        return new Vector2Int(
-            Mathf.RoundToInt(worldPos.x / CellSize),
-            Mathf.RoundToInt(worldPos.z / CellSize));
-    }
-
-    public Vector3 GridToWorld(int gx, int gy)
-    {
-        return new Vector3(gx * CellSize, 0f, gy * CellSize);
-    }
-
-    public GridTile GetTile(int x, int y)
-    {
-        return !IsInsideGrid(x, y) ? null : Grid[x, y];
-    }
-
+    
     public GridTile GetTile(Vector2Int pos)
     {
-        return GetTile(pos.x, pos.y);
+        return !IsInsideGrid(pos.x, pos.y) ? null : Grid[pos.x, pos.y];
     }
 
     private bool IsInsideGrid(int x, int y)
@@ -203,7 +184,7 @@ public class GameStateManager : NetworkBehaviour
         _playersInGame.Add(player);
 
         var spawn = PlayerSpawns[_playerSpawnMap[clientId]];
-        var playerSpawnLoc = GridToWorld(spawn.X, spawn.Y);
+        var playerSpawnLoc = GridUtils.GridToWorld(spawn.X, spawn.Y);
         playerSpawnLoc.y += 1f;
         player.GetComponent<PlayerController>().spawnPosition.Value = playerSpawnLoc;
     }
