@@ -1,12 +1,11 @@
 using System;
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
-using NUnit.Framework;
+using DefaultNamespace;
 using State;
 using Unity.Netcode;
 
-public class BombExplode : NetworkBehaviour
+public class BombExplode : NetworkBehaviour, IExplosive
 {
     [SerializeField] private float fuseTime = 3f;
     [SerializeField] private int range = 2;
@@ -15,7 +14,9 @@ public class BombExplode : NetworkBehaviour
     
     private AudioSource _audioSource;
     private GameStateManager gs;
-
+    
+    private bool isExploded = false;
+    
     private void Start()
     {
         gs = GameStateManager.Instance;
@@ -23,6 +24,7 @@ public class BombExplode : NetworkBehaviour
         if (IsServer)
         {
             StartCoroutine(FuseCoroutine());
+            gs.RegisterDynamicGameObject(gameObject);
         }
     }
 
@@ -31,19 +33,19 @@ public class BombExplode : NetworkBehaviour
         yield return new WaitForSeconds(fuseTime);
         Explode();
     }
+    
+    public void OnExplosion()
+    {
+        Explode();
+    }
 
     private void Explode()
     {
+        if (isExploded) return;
+        isExploded = true;
+        
         PlaySoundExplosionPositionClientRpc(transform.position, 10f);
-        var playersGridVec = new Dictionary<GameObject, Vector2Int>();
-
-        foreach (var networkClient in NetworkManager.Singleton.ConnectedClientsList)
-        {
-            playersGridVec.Add(
-                networkClient.PlayerObject.gameObject,
-                GridUtils.WorldToGrid(networkClient.PlayerObject.transform.position));
-          
-        }
+     
         var bombGridVec = GridUtils.WorldToGrid(transform.position);
 
         Vector2Int[] dirs =
@@ -56,25 +58,19 @@ public class BombExplode : NetworkBehaviour
 
         foreach (var dir in dirs)
         {
-            ExplodeInLine(bombGridVec, dir, range, playersGridVec);
+            ExplodeInLine(bombGridVec, dir, range);
         }
 
-        ExplodeInLine(bombGridVec, Vector2Int.zero, 1, playersGridVec);
+        ExplodeInLine(bombGridVec, Vector2Int.zero, 1);
 
         StartCoroutine(DespawnAfterSeconds(1f));
 
-        Destroy(gameObject,1f);
     }
-
-    private IEnumerator DespawnAfterSeconds(float seconds)
+    
+    public void ExplodeInLine(Vector2Int explodeGridOrigin, Vector2Int dir, int rangeInDir)
     {
-        yield return new WaitForSeconds(seconds);
-        gameObject.GetComponent<NetworkObject>().Despawn(true);
-    }
-
-
-    private void ExplodeInLine(Vector2Int explodeGridOrigin, Vector2Int dir, int rangeInDir, Dictionary<GameObject, Vector2Int> playersGridVec)
-    {
+        var gameObjectsWithTilePlacement = gs.GetDynamicGameObjectsWithTilePlacement();
+        
         for (var step = 1; step <= rangeInDir; step++)
         {
             Vector2Int tileGridVec = explodeGridOrigin + dir * step;
@@ -104,16 +100,24 @@ public class BombExplode : NetworkBehaviour
                     return;
 
                 case WallType.Empty:
-                    StartCoroutine(DelayedSpawnVFX(tileGridVec, dir, step * 0.05f));
+                    StartCoroutine(DelayedSpawnExplosionVFX(tileGridVec, dir, step * 0.05f));
 
-                    foreach (var playerData in playersGridVec)
+                    
+                    foreach (var dynamicGameObject in gameObjectsWithTilePlacement)
                     {
-                        if (tileGridVec == playerData.Value)
+                        if (tileGridVec != dynamicGameObject.Value) continue;
+                        
+                        if (dynamicGameObject.Key.TryGetComponent<IExplosive>(out var explosive))
                         {
-                            playerData.Key.GetComponent<PlayerHealth>().TakeDamage(1);
+                            explosive.OnExplosion();
                         }
+
+                        if (dynamicGameObject.Key.CompareTag("Player"))
+                        {
+                            dynamicGameObject.Key.GetComponent<PlayerHealth>().TakeDamage(1);
+                        }
+
                     }
-                   
                     break;
 
                 default:
@@ -123,14 +127,20 @@ public class BombExplode : NetworkBehaviour
         }
     }
 
-    private IEnumerator DelayedSpawnVFX(Vector2Int tileVec, Vector2Int directionVec, float delay)
+    private IEnumerator DelayedSpawnExplosionVFX( Vector2Int tileGridVec, Vector2Int directionVec, float delay)
     {
         yield return new WaitForSeconds(delay);
-        var position = GridUtils.GridToWorld(tileVec.x, tileVec.y);
+        var position = GridUtils.GridToWorld(tileGridVec.x, tileGridVec.y);
         position.y += 1f;
         SpawnExplosionVfxClientRpc(position, directionVec);
     }
 
+    private IEnumerator DespawnAfterSeconds(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        gs.UnRegisterDynamicGameObject(gameObject);
+        gameObject.GetComponent<NetworkObject>().Despawn(true);
+    }
     
     [ClientRpc]
     public void SpawnExplosionVfxClientRpc(Vector3 position, Vector2Int directionVec)
@@ -145,10 +155,12 @@ public class BombExplode : NetworkBehaviour
     
     
     [ClientRpc]
-    public void PlaySoundExplosionPositionClientRpc( Vector3 position, float volume = 1f)
+    private void PlaySoundExplosionPositionClientRpc( Vector3 position, float volume = 1f)
     {
         
         AudioSource.PlayClipAtPoint(_audioSource.clip, position, volume);
     }
+
+
 
 }
