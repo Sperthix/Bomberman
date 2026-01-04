@@ -7,9 +7,9 @@
             <ui:ScrollView name="players-list" class="players-list" />
         </ui:VisualElement>
         <ui:VisualElement name="lobby-buttons" class="lobby-buttons">
-            <ui:Button text="Ready" name="btn-ready" class="lobby-btn secondary" />
+            <ui:Button text="Ready" name="btn-ready" class="lobby-btn" />
             <ui:Button text="Start" name="btn-start" class="lobby-btn" />
-            <ui:Button text="Back to Menu" name="btn-back" class="lobby-btn secondary" />
+            <ui:Button text="Back to Menu" name="btn-back" class="lobby-btn" />
         </ui:VisualElement>
         <ui:Label name="lobby-hint" class="lobby-hint" />
     </ui:VisualElement>

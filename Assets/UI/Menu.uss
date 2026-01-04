@@ -1,103 +1,65 @@
-.menu-root {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-
-    background-color: rgba(0, 0, 0, 0.8);
-}
-
-.screen-container {
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-/* Main menu screen */
-
-.main-menu-screen {
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-/* Settings screen */
-
-.settings-screen {
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-/* Additional play selection screens */
-
+/* Menu Screen Container */
+.menu-root,
+.screen-container,
+.main-menu-screen,
+.settings-screen,
 .gamemode-selection-screen,
-.multiplayer-mode-screen {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-
-    background-color: rgba(0, 0, 0, 0.8);
-}
-
-.gamemode-selection-label,
-.multiplayer-mode-label {
-    font-size: 32px;
-    color: white;
-    margin-bottom: 16px;
-}
-
-.gamemode-selection-btn,
-.multiplayer-mode-btn,
-.multiplayer-back-btn,
-.gamemode-selection-back-btn {
-    width: 260px;
-    height: 48px;
-    font-size: 20px;
-    margin-top: 6px;
-}
-
-/* Game over screen */
-
+.multiplayer-mode-screen,
 .game-over-screen {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-
     justify-content: center;
     align-items: center;
     flex-direction: column;
-
-    background-color: rgba(0, 0, 0, 0.8);
+    background-color: rgba(0, 0, 0, 0.85);
 }
 
-/* Common elements */
-
-.menu-title {
+/* Menu titles */
+.menu-title,
+.gamemode-selection-label,
+.multiplayer-mode-label {
     font-size: 40px;
     color: white;
-    margin-bottom: 24px;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 40px;
+    -unity-font-style: bold;
+    -unity-text-align: middle-center;
+    width: 100%;
 }
 
-.menu-btn {
-    width: 220px;
-    margin-top: 6px;
-}
-
-.settings-label {
+/* Menu buttons */
+.menu-btn,
+.gamemode-selection-btn,
+.multiplayer-mode-btn,
+.multiplayer-back-btn,
+.gamemode-selection-back-btn {
+    width: 280px;
+    height: 48px;
+    font-size: 20px;
+    margin: 4px 0;
+    padding: 0;
+    -unity-text-align: middle-center;
+    border-radius: 4px;
+    background-color: rgba(60, 60, 60, 0.8);
     color: white;
-    margin-bottom: 12px;
+    border-width: 1px;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* hover effect */
+.menu-btn:hover,
+.gamemode-selection-btn:hover,
+.multiplayer-mode-btn:hover {
+    background-color: rgba(80, 80, 80, 1);
+}
+
+/* Back buttons off-set */
+.multiplayer-back-btn,
+.gamemode-selection-back-btn {
+    margin-top: 16px;
+    background-color: rgba(45, 45, 45, 0.8);
 }
