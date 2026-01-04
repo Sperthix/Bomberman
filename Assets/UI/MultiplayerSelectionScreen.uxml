@@ -1,21 +1,9 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/UI/Menu.uss?fileID=7433441132597879392&amp;guid=c1f40b45c511d204bb2de799d9434708&amp;type=3#Menu" />
     <ui:VisualElement name="multiplayer-mode-screen" class="multiplayer-mode-screen">
-
-        <ui:Label text="Multiplayer"
-                  name="multiplayer-mode-label"
-                  class="multiplayer-mode-label" />
-
-        <ui:Button text="Host game"
-                   name="mp-host-btn"
-                   class="multiplayer-mode-btn" />
-
-        <ui:Button text="Join game"
-                   name="mp-join-btn"
-                   class="multiplayer-mode-btn" />
-
-        <ui:Button text="Back"
-                   name="mp-back-btn"
-                   class="multiplayer-back-btn" />
-
+        <ui:Label text="Multiplayer" name="multiplayer-mode-label" class="multiplayer-mode-label" />
+        <ui:Button text="Host game" name="mp-host-btn" class="multiplayer-mode-btn" />
+        <ui:Button text="Join game" name="mp-join-btn" class="multiplayer-mode-btn" />
+        <ui:Button text="Back" name="mp-back-btn" class="multiplayer-back-btn" />
     </ui:VisualElement>
 </ui:UXML>
