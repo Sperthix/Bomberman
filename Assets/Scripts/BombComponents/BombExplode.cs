@@ -9,8 +9,11 @@ public class BombExplode : NetworkBehaviour, IExplosive
 {
     [SerializeField] private int range = 2;
     
+    public NetworkVariable<ulong> bombOwnerPlayerUid = new NetworkVariable<ulong>();
+    
     
     public GameObject explosionVFXPrefab;
+    
     
     private AudioSource _audioSource;
     private GameStateManager gs;
@@ -27,7 +30,7 @@ public class BombExplode : NetworkBehaviour, IExplosive
             gs.RegisterDynamicGameObject(gameObject);
         }
     }
-
+    
     
     public void OnExplosion()
     {

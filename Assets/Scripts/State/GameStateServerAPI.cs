@@ -35,6 +35,7 @@ public class GameStateServerAPI : NetworkBehaviour
         var go = Instantiate(bombPrefabGO, position, Quaternion.identity);
         var no = go.GetComponent<NetworkObject>();
         no.Spawn(true);
+        go.GetComponent<BombExplode>().bombOwnerPlayerUid.Value = rpcParams.Receive.SenderClientId;
         
     }
     
