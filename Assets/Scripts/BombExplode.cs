@@ -1,9 +1,12 @@
 using System;
 using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+using NUnit.Framework;
 using State;
+using Unity.Netcode;
 
-public class BombExplode : MonoBehaviour
+public class BombExplode : NetworkBehaviour
 {
     [SerializeField] private float fuseTime = 3f;
     [SerializeField] private int range = 2;
@@ -11,13 +14,16 @@ public class BombExplode : MonoBehaviour
     public GameObject explosionVFXPrefab;
     
     private AudioSource _audioSource;
-    private GameState gs;
+    private GameStateManager gs;
 
-    private void OnEnable()
+    private void Start()
     {
-        gs = GameState.Instance;
+        gs = GameStateManager.Instance;
         _audioSource = GetComponent<AudioSource>();
-        StartCoroutine(FuseCoroutine());
+        if (IsServer)
+        {
+            StartCoroutine(FuseCoroutine());
+        }
     }
 
     private IEnumerator FuseCoroutine()
@@ -28,10 +34,17 @@ public class BombExplode : MonoBehaviour
 
     private void Explode()
     {
-        AudioSource.PlayClipAtPoint(_audioSource.clip, transform.position, 10f);
-        
-        var playerGridVec = gs.WorldToGrid(gs.PlayerRef.transform.position);
-        var bombGridVec = gs.WorldToGrid(transform.position);
+        PlaySoundExplosionPositionClientRpc(transform.position, 10f);
+        var playersGridVec = new Dictionary<GameObject, Vector2Int>();
+
+        foreach (var networkClient in NetworkManager.Singleton.ConnectedClientsList)
+        {
+            playersGridVec.Add(
+                networkClient.PlayerObject.gameObject,
+                GridUtils.WorldToGrid(networkClient.PlayerObject.transform.position));
+          
+        }
+        var bombGridVec = GridUtils.WorldToGrid(transform.position);
 
         Vector2Int[] dirs =
         {
@@ -43,15 +56,24 @@ public class BombExplode : MonoBehaviour
 
         foreach (var dir in dirs)
         {
-            ExplodeInLine(bombGridVec, dir, range, playerGridVec);
+            ExplodeInLine(bombGridVec, dir, range, playersGridVec);
         }
 
-        ExplodeInLine(bombGridVec, Vector2Int.zero, 1, playerGridVec);
+        ExplodeInLine(bombGridVec, Vector2Int.zero, 1, playersGridVec);
+
+        StartCoroutine(DespawnAfterSeconds(1f));
 
         Destroy(gameObject,1f);
     }
 
-    private void ExplodeInLine(Vector2Int explodeGridOrigin, Vector2Int dir, int rangeInDir, Vector2Int playerGridVec)
+    private IEnumerator DespawnAfterSeconds(float seconds)
+    {
+        yield return new WaitForSeconds(seconds);
+        gameObject.GetComponent<NetworkObject>().Despawn(true);
+    }
+
+
+    private void ExplodeInLine(Vector2Int explodeGridOrigin, Vector2Int dir, int rangeInDir, Dictionary<GameObject, Vector2Int> playersGridVec)
     {
         for (var step = 1; step <= rangeInDir; step++)
         {
@@ -83,12 +105,15 @@ public class BombExplode : MonoBehaviour
 
                 case WallType.Empty:
                     StartCoroutine(DelayedSpawnVFX(tileGridVec, dir, step * 0.05f));
-                    
-                    if (tileGridVec == playerGridVec)
-                    {
-                        gs.PlayerRef.GetComponent<PlayerHealth>().TakeDamage(1);
-                    }
 
+                    foreach (var playerData in playersGridVec)
+                    {
+                        if (tileGridVec == playerData.Value)
+                        {
+                            playerData.Key.GetComponent<PlayerHealth>().TakeDamage(1);
+                        }
+                    }
+                   
                     break;
 
                 default:
@@ -101,20 +126,29 @@ public class BombExplode : MonoBehaviour
     private IEnumerator DelayedSpawnVFX(Vector2Int tileVec, Vector2Int directionVec, float delay)
     {
         yield return new WaitForSeconds(delay);
-        SpawnExplosionVFX(tileVec, directionVec);
-
+        var position = GridUtils.GridToWorld(tileVec.x, tileVec.y);
+        position.y += 1f;
+        SpawnExplosionVfxClientRpc(position, directionVec);
     }
 
-    private void SpawnExplosionVFX(Vector2Int vector2Int, Vector2Int directionVec)
+    
+    [ClientRpc]
+    public void SpawnExplosionVfxClientRpc(Vector3 position, Vector2Int directionVec)
     {
         Vector3 direction3D = new Vector3(directionVec.x, 0, directionVec.y);
         var rotation = Quaternion.LookRotation(direction3D);
 
-        var posVec = gs.GridToWorld(vector2Int.x, vector2Int.y);
-        posVec.y += 1f;
-
         var vfx = Instantiate(explosionVFXPrefab,
-            posVec, rotation);
+            position, rotation);
         Destroy(vfx, 1);
     }
+    
+    
+    [ClientRpc]
+    public void PlaySoundExplosionPositionClientRpc( Vector3 position, float volume = 1f)
+    {
+        
+        AudioSource.PlayClipAtPoint(_audioSource.clip, position, volume);
+    }
+
 }

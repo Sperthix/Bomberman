@@ -1,4 +1,5 @@
 using System;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,17 +10,19 @@ public enum GamePhase
     GameOver
 }
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
     public static GameManager Instance { get; set; }
+    public NetworkVariable<bool> isMultiplayer = new NetworkVariable<bool>(false);
 
     public GamePhase Phase { get; set; } = GamePhase.MainMenu;
     private const String GameSceneName = "GameScene";
+    public static String EndGame = "EndGame";
     private const String MenuSceneName = "MainMenuScene";
 
     public event Action<GamePhase> OnPhaseChanged;
 
-    private void Awake()
+    private void Start()
     {
         if (Instance && Instance != this)
         {
@@ -38,28 +41,35 @@ public class GameManager : MonoBehaviour
         OnPhaseChanged?.Invoke(Phase);
     }
     
-    public void StartSinglePlayerGame()
+    public void StartGame(bool isMp)
     {
-        if (GameState.Instance)
-        {
-            GameState.Instance.restartToDefaultMap();
-        }
-        
+        isMultiplayer.Value = isMp;
+        RestartGame();
+    }
+
+    public void RestartGame()
+    {
         Time.timeScale = 1f;
         SetPhase(GamePhase.Playing);
-        SceneManager.LoadScene(GameSceneName);
+        if (IsHost)
+        {
+            NetworkManager.Singleton.SceneManager.LoadScene(GameSceneName, LoadSceneMode.Single);
+        }
     }
+    
 
     public void BackToMainMenu()
     {
+        NetworkManager.Singleton.Shutdown(true);
         Time.timeScale = 1f;
         SetPhase(GamePhase.MainMenu);
         SceneManager.LoadScene(MenuSceneName);
     }
     
-    public void PlayerDied()
+    public void GameOverPhase()
     {
         SetPhase(GamePhase.GameOver);
         Time.timeScale = 0f;
     }
+    
 }

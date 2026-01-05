@@ -1,4 +1,7 @@
+using Unity.Netcode;
+using Unity.Netcode.Transports.UTP;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace UI
@@ -86,9 +89,17 @@ namespace UI
             var btnMp   = screenRoot.Q<Button>("gamemode-selection-mp");
             var btnBack = screenRoot.Q<Button>("gamemode-selection-back");
 
-            btnSp.clicked += () => GameManager.Instance.StartSinglePlayerGame();
+            btnSp.clicked += StartSinglePlayerGame;
             btnMp.clicked += ShowMultiplayerSelection;
             btnBack.clicked += ShowMainMenu;
+        }
+
+        private void StartSinglePlayerGame()
+        {
+            NetworkManager.Singleton.OnServerStarted += OnSinglePlayerServerStarted;
+            var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+            transport.ConnectionData.Address = "127.0.0.1";
+            NetworkManager.Singleton.StartHost();
         }
 
         private void WireMultiplayerSelection(VisualElement screenRoot)
@@ -99,17 +110,30 @@ namespace UI
 
             btnHost.clicked += () =>
             {
-                Debug.Log("Multiplayer: Host selected");
-                // TODO: MP host game
+                NetworkManager.Singleton.OnServerStarted += OnMultiplayerServerStarted;
+                NetworkManager.Singleton.StartHost();
             };
 
             btnJoin.clicked += () =>
             {
-                Debug.Log("Multiplayer: Join selected");
-                // TODO: MP join game
+                var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
+                transport.ConnectionData.Address = "127.0.0.1";
+                NetworkManager.Singleton.StartClient();
             };
 
             btnBack.clicked += ShowGameModeSelection;
+        }
+        
+        private void OnSinglePlayerServerStarted()
+        {
+            NetworkManager.Singleton.OnServerStarted -= OnSinglePlayerServerStarted;
+            GameManager.Instance.StartGame(false);
+        }
+        
+        private void OnMultiplayerServerStarted()
+        {
+            NetworkManager.Singleton.OnServerStarted -= OnMultiplayerServerStarted;
+            NetworkManager.Singleton.SceneManager.LoadScene("LobbyScene", LoadSceneMode.Single);
         }
     }
 }

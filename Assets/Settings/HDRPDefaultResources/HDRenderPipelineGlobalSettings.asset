@@ -156,6 +156,7 @@ MonoBehaviour:
       sssCustomDownsampleSteps: 0
       msaaMode: 1
       materialQuality: 0
+  m_Version: 14
   m_Settings:
     m_SettingsList:
       m_List:
@@ -196,7 +197,28 @@ MonoBehaviour:
       - rid: 6927923134193729562
       - rid: 6927923134193729563
     m_RuntimeSettings:
-      m_List: []
+      m_List:
+      - rid: 8556427327610290176
+      - rid: 8556427327610290180
+      - rid: 6927923134193729536
+      - rid: 6927923134193729540
+      - rid: 6927923134193729541
+      - rid: 6927923134193729542
+      - rid: 6927923134193729543
+      - rid: 6927923134193729544
+      - rid: 6927923134193729545
+      - rid: 6927923134193729546
+      - rid: 6927923134193729549
+      - rid: 6927923134193729550
+      - rid: 6927923134193729551
+      - rid: 6927923134193729553
+      - rid: 6927923134193729555
+      - rid: 6927923134193729556
+      - rid: 6927923134193729559
+      - rid: 6927923134193729560
+      - rid: 6927923134193729561
+      - rid: 6927923134193729562
+      - rid: 6927923134193729563
   renderingLayerNames:
   - Light Layer default
   - Light Layer 1
@@ -237,7 +259,6 @@ MonoBehaviour:
     obsoleteHasProbeVolumes:
       m_Keys: []
       m_Values: 
-  m_Version: 14
   references:
     version: 2
     RefIds:

@@ -1,42 +1,90 @@
 using System.Linq;
-using UnityEngine;
 using State;
+using Unity.Netcode;
+using UnityEngine;
 
-public class LevelBuilder : MonoBehaviour
+public class LevelBuilder : NetworkBehaviour
 {
-    [Header("Prefabs")]
-    [SerializeField] private GameObject floorPrefab;
+    [Header("Prefabs")] [SerializeField] private GameObject floorPrefab;
     [SerializeField] private GameObject wallIndestructiblePrefab;
     [SerializeField] private GameObject wallDestructiblePrefab;
-    [SerializeField] private GameObject playerPrefab;
 
-    private GameState state;
+    private GameStateManager _stateManager;
 
-    private void Start()
+    public void ParseMapData(string mapData)
     {
-        state = GameState.Instance;
+        _stateManager = GameStateManager.Instance;
 
-        if (state == null)
+        var lines = mapData.Split('\n');
+        var validLines = lines
+            .Select(l => l.Trim())
+            .Where(l => !string.IsNullOrEmpty(l))
+            .ToList();
+
+        _stateManager.ArenaHeight = validLines.Count;
+        _stateManager.ArenaWidth = validLines[0].Length;
+
+        if (validLines.Any(l => l.Length != _stateManager.ArenaWidth))
         {
-            Debug.LogError("GameState.Instance not found!");
+            Debug.LogError("Map data is inconsistent");
             return;
+        }
+
+        _stateManager.Grid = new GridTile[_stateManager.ArenaWidth, _stateManager.ArenaHeight];
+
+
+        for (var y = 0; y < _stateManager.ArenaHeight; y++)
+        {
+            var line = validLines[y];
+
+            for (var x = 0; x < _stateManager.ArenaWidth; x++)
+            {
+                var c = line[x];
+
+                switch (c)
+                {
+                    case 'X':
+                        _stateManager.Grid[x, y] = new GridTile(WallType.WallIndestructible);
+                        break;
+
+                    case 'W':
+                        _stateManager.Grid[x, y] = new GridTile(WallType.WallDestructible);
+                        break;
+
+                    case 'P':
+                        _stateManager.PlayerSpawns.Add(new PlayerSpawn(x, y));
+                        _stateManager.Grid[x, y] = new GridTile(WallType.Empty);
+                        break;
+
+                    case 'O':
+                    case ' ':
+                        _stateManager.Grid[x, y] = new GridTile(WallType.Empty);
+                        break;
+
+                    default:
+                        Debug.LogWarning($"Neznámy znak '{c}' na pozícii [{x},{y}]");
+                        _stateManager.Grid[x, y] = new GridTile(WallType.Empty);
+                        break;
+                }
+            }
         }
 
         BuildLevel();
     }
 
-    private void BuildLevel()
-    {
-        float cellSize = state.CellSize;
 
-        for (int y = 0; y < state.ArenaHeight; y++)
+    public void BuildLevel()
+    {
+        float cellSize = GridUtils.CellSize;
+
+        for (int y = 0; y < _stateManager.ArenaHeight; y++)
         {
-            for (int x = 0; x < state.ArenaWidth; x++)
+            for (int x = 0; x < _stateManager.ArenaWidth; x++)
             {
-                GridTile tile = state.Grid[x, y];
+                GridTile tile = _stateManager.Grid[x, y];
 
                 Vector3 worldPos = new Vector3(x * cellSize, 0f, y * cellSize);
-                
+
                 switch (tile.Type)
                 {
                     case WallType.WallIndestructible:
@@ -52,17 +100,17 @@ public class LevelBuilder : MonoBehaviour
                 }
             }
         }
-
-        SpawnPlayer();
     }
-    
+
     private void SpawnWallIndestructible(Vector3 pos, int x, int y)
     {
         if (wallIndestructiblePrefab == null) return;
 
         Vector3 p = pos + Vector3.up * 1f;
         GameObject go = Instantiate(wallIndestructiblePrefab, p, Quaternion.identity, transform);
-        
+        var no = go.GetComponent<NetworkObject>();
+        no.Spawn(true);
+
         WallBehaviour wb = go.GetComponent<WallBehaviour>() ?? go.GetComponentInChildren<WallBehaviour>();
         if (wb != null)
         {
@@ -80,6 +128,8 @@ public class LevelBuilder : MonoBehaviour
 
         Vector3 p = pos + Vector3.up * 1f;
         GameObject go = Instantiate(wallDestructiblePrefab, p, Quaternion.identity, transform);
+        var no = go.GetComponent<NetworkObject>();
+        no.Spawn(true);
 
         WallBehaviour wb = go.GetComponent<WallBehaviour>() ?? go.GetComponentInChildren<WallBehaviour>();
         if (wb != null)
@@ -90,15 +140,5 @@ public class LevelBuilder : MonoBehaviour
         {
             Debug.LogWarning($"Destructible wall prefab '{go.name}' has no WallBehaviour script");
         }
-    }
-
-    private void SpawnPlayer()
-    {
-        GameObject.FindGameObjectsWithTag("Player").ToList().ForEach(player => Destroy(player));
-        var spawn = state.PlayerSpawns.First();
-        var playerSpawnLoc = state.GridToWorld(spawn.X, spawn.Y);
-        playerSpawnLoc.y += 1f;
-        var player = Instantiate(playerPrefab, playerSpawnLoc, Quaternion.identity, transform);
-        state.RegisterPlayer(player);
     }
 }
