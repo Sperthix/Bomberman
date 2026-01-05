@@ -75,6 +75,7 @@ public class PlayerController : NetworkBehaviour
         HandleMovement();
         HandleLook();
         UpdatePlacementLookAtData();
+        
         HandleAbilityBarSelection();
         HandleBombPlacement();
     }
@@ -117,15 +118,19 @@ public class PlayerController : NetworkBehaviour
     
     private void UpdatePlacementLookAtData()
     {
-        var hits = Physics.RaycastAll(PlayerCamera.transform.position, PlayerCamera.transform.forward, 100f);
+        LayerMask mask = LayerMask.GetMask("StaticObjects");
+        var hits = Physics.RaycastAll(PlayerCamera.transform.position,
+            PlayerCamera.transform.forward, 100f, mask);
         hits = hits.OrderBy(h => h.distance).ToArray();
         foreach (var hit in hits)
         {
-            if (hit.collider.gameObject.isStatic)
-            {
-                PlaceableLookAtData = new PlayerPlaceableLookAtData(transform.position, hit.point, hit.collider.gameObject, hit.normal);
+            PlaceableLookAtData = new PlayerPlaceableLookAtData(
+                    transform.position,
+                    hit.point,
+                    hit.collider.gameObject,
+                    hit.normal);
                 return;
-            }
+            
         }
         PlaceableLookAtData = null;
     }

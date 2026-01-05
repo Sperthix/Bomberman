@@ -23,8 +23,8 @@ public class BombSpawnPlaceableValidator : MonoBehaviour
 
     void Update()
     {
+        
         if (!_isInitialized) return;
-
         var playerPlaceableLookAtData = _playerControllerRef.PlaceableLookAtData;
         if (playerPlaceableLookAtData == null)
         {
@@ -38,6 +38,7 @@ public class BombSpawnPlaceableValidator : MonoBehaviour
         transform.position = placementPosition;
 
         var isColliding = IsSpawnPointColliding();
+
         var isOutOfRange = IsOutOfRange(placementPosition, playerPlaceableLookAtData.playerPosition);
         var isSpawnPlaceValid = !isColliding && !isOutOfRange;
 
@@ -94,7 +95,7 @@ public class BombSpawnPlaceableValidator : MonoBehaviour
         var hits = Physics.OverlapSphere(transform.position, _heighOfBomb/2);
         foreach (var hit in hits)
         {
-            if (hit.gameObject.isStatic)
+            if (hit.gameObject.layer == LayerMask.NameToLayer("StaticObjects"))
             {
                 if (recursiveCall)
                 {
