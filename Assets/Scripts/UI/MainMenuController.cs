@@ -1,6 +1,7 @@
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 namespace UI
@@ -95,7 +96,7 @@ namespace UI
 
         private void StartSinglePlayerGame()
         {
-            NetworkManager.Singleton.OnServerStarted += () => { GameManager.Instance.StartGame(false); };
+            NetworkManager.Singleton.OnServerStarted += OnSinglePlayerServerStarted;
             var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
             transport.ConnectionData.Address = "127.0.0.1";
             NetworkManager.Singleton.StartHost();
@@ -109,27 +110,30 @@ namespace UI
 
             btnHost.clicked += () =>
             {
-                Debug.Log("Multiplayer: Host selected");
-                NetworkManager.Singleton.OnServerStarted += () =>
-                {
-                    GameManager.Instance.StartGame(true);
-                    
-                };
+                NetworkManager.Singleton.OnServerStarted += OnMultiplayerServerStarted;
                 NetworkManager.Singleton.StartHost();
             };
 
             btnJoin.clicked += () =>
             {
-                Debug.Log("Multiplayer: Join selected");
-                
                 var transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
                 transport.ConnectionData.Address = "127.0.0.1";
-
-                GameManager.Instance.StartGame(true);
                 NetworkManager.Singleton.StartClient();
             };
 
             btnBack.clicked += ShowGameModeSelection;
+        }
+        
+        private void OnSinglePlayerServerStarted()
+        {
+            NetworkManager.Singleton.OnServerStarted -= OnSinglePlayerServerStarted;
+            GameManager.Instance.StartGame(false);
+        }
+        
+        private void OnMultiplayerServerStarted()
+        {
+            NetworkManager.Singleton.OnServerStarted -= OnMultiplayerServerStarted;
+            NetworkManager.Singleton.SceneManager.LoadScene("LobbyScene", LoadSceneMode.Single);
         }
     }
 }
