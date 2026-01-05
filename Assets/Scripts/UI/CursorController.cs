@@ -34,8 +34,8 @@ namespace UI
             switch (phase)
             {
                 case GamePhase.Playing:
-                    Cursor.lockState = CursorLockMode.Locked;
-                    Cursor.visible = false;
+                    // Cursor.lockState = CursorLockMode.Locked;
+                    // Cursor.visible = false;
                     break;
 
                 case GamePhase.MainMenu:

@@ -3,7 +3,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class SpawnPlaceableValidator : MonoBehaviour
+public class BombSpawnPlaceableValidator : MonoBehaviour
 {
     private GameObject _playerRef;
     private PlayerController _playerControllerRef;
@@ -19,6 +19,7 @@ public class SpawnPlaceableValidator : MonoBehaviour
     private int _maxPlacementDistance;
 
     private bool _isInitialized = false;
+    private float _heighOfBomb;
 
     void Update()
     {
@@ -53,7 +54,10 @@ public class SpawnPlaceableValidator : MonoBehaviour
         {
             if (isSpawnPlaceValid)
             {
-                GameStateServerAPI.Instance.PlaceBombServerRpc(transform.position);
+                GameStateServerAPI.Instance.PlaceBombServerRpc(
+                    transform.position,
+                    bombPrefab.GetComponent<NetworkObject>().PrefabIdHash,
+                    default);
             }
 
             Destroy(gameObject);
@@ -65,7 +69,7 @@ public class SpawnPlaceableValidator : MonoBehaviour
         var transformPosition = _playerControllerRef.PlayerCamera.transform.position +
                                 _playerControllerRef.PlayerCamera.transform.forward * 1f;
         transformPosition += _playerControllerRef.PlayerCamera.transform.right * 0.5f;
-        transformPosition += _playerControllerRef.PlayerCamera.transform.up * -0.8f;
+        transformPosition += _playerControllerRef.PlayerCamera.transform.up *  (_heighOfBomb * -0.8f);
         transform.position = transformPosition;
         _renderer.material = redTransparentMaterial;
     }
@@ -81,13 +85,13 @@ public class SpawnPlaceableValidator : MonoBehaviour
     {
         var vector = playerPlaceableLookAtData.staticObjectIntersectPosition;
         vector += playerPlaceableLookAtData.IntersectNormalVec * 0.55f;
-        vector.y = 0.55f;
+        vector.y = _heighOfBomb * 0.55f;
         return vector;
     }
 
     private bool IsSpawnPointColliding(bool recursiveCall = false)
     {
-        var hits = Physics.OverlapSphere(transform.position, 0.5f);
+        var hits = Physics.OverlapSphere(transform.position, _heighOfBomb/2);
         foreach (var hit in hits)
         {
             if (hit.gameObject.isStatic)
@@ -138,6 +142,9 @@ public class SpawnPlaceableValidator : MonoBehaviour
         _placeBombAction = _playerInput.actions["PlaceBomb"];
 
         _renderer = GetComponentInChildren<Renderer>();
+        Vector3 size = _renderer.bounds.size; 
+        _heighOfBomb = size.y;
+
         _defaultMaterial = _renderer.material;
         _isInitialized = true;
     }

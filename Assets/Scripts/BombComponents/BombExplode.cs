@@ -7,10 +7,13 @@ using Unity.Netcode;
 
 public class BombExplode : NetworkBehaviour, IExplosive
 {
-    [SerializeField] private float fuseTime = 3f;
     [SerializeField] private int range = 2;
     
+    public NetworkVariable<ulong> bombOwnerPlayerUid = new NetworkVariable<ulong>();
+    
+    
     public GameObject explosionVFXPrefab;
+    
     
     private AudioSource _audioSource;
     private GameStateManager gs;
@@ -19,20 +22,15 @@ public class BombExplode : NetworkBehaviour, IExplosive
     
     private void Start()
     {
+        
         gs = GameStateManager.Instance;
         _audioSource = GetComponent<AudioSource>();
         if (IsServer)
         {
-            StartCoroutine(FuseCoroutine());
             gs.RegisterDynamicGameObject(gameObject);
         }
     }
-
-    private IEnumerator FuseCoroutine()
-    {
-        yield return new WaitForSeconds(fuseTime);
-        Explode();
-    }
+    
     
     public void OnExplosion()
     {
