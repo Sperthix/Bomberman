@@ -4,16 +4,16 @@
     <ui:VisualElement name="action-bar" class="hud-action-bar" style="flex-direction: row; align-items: stretch; justify-content: center; align-self: center;">
         <ui:VisualElement name="slot-0" class="action-slot">
             <ui:Label name="slot-0-key" text="1" class="slot-key" />
-            <ui:Label name="slot-0-label" text="Bomb 1" class="slot-label" />
+            <ui:Label name="slot-0-label" text="Bomb" class="slot-label" />
         </ui:VisualElement>
         <ui:VisualElement name="slot-1" class="action-slot">
             <ui:Label name="slot-1-key" text="2" class="slot-key" />
-            <ui:Label name="slot-1-label" text="Bomb 2" class="slot-label" />
+            <ui:Label name="slot-1-label" text="Mine" class="slot-label" />
         </ui:VisualElement>
         <ui:VisualElement name="slot-2" class="action-slot">
             <ui:Label name="slot-2-key" text="3" class="slot-key" />
-            <ui:Label name="slot-2-label" text="Bomb 3" class="slot-label" />
+            <ui:Label name="slot-2-label" text="Bomb" class="slot-label" />
         </ui:VisualElement>
     </ui:VisualElement>
-    <ui:VisualElement name="health-change-overlay" class="health-change-overlay"></ui:VisualElement>
+    <ui:VisualElement name="health-change-overlay" class="health-change-overlay" />
 </ui:UXML>
