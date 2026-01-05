@@ -37,7 +37,7 @@ namespace PlayerComponents
         {
             var bombPreview = Instantiate(bombPreviewPrefabs[_selectedBombPreviewIndex],
                 transform.position + (transform.forward * 1f), Quaternion.identity);
-            bombPreview.GetComponent<SpawnPlaceableValidator>().Init(this.gameObject);
+            bombPreview.GetComponent<BombSpawnPlaceableValidator>().Init(this.gameObject);
         }
     }
 }

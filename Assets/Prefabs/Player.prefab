@@ -310,7 +310,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.Netcode.Runtime::Unity.Netcode.NetworkObject
-  GlobalObjectIdHash: 478284572
+  GlobalObjectIdHash: 4075991583
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -467,7 +467,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   bombPreviewPrefabs:
   - {fileID: 4882525065325263492, guid: 3b964f3e978ee68bfab9226289379f10, type: 3}
-  - {fileID: 4882525065325263492, guid: 3b964f3e978ee68bfab9226289379f10, type: 3}
+  - {fileID: 4882525065325263492, guid: d2b25ac86fdba7c1b97c648d3b17dc2b, type: 3}
   - {fileID: 4882525065325263492, guid: 3b964f3e978ee68bfab9226289379f10, type: 3}
 --- !u!1001 &922286427015888114
 PrefabInstance:

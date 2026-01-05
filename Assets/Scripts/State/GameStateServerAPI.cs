@@ -1,3 +1,4 @@
+using System.Linq;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -19,13 +20,19 @@ public class GameStateServerAPI : NetworkBehaviour
     }
     
     [Rpc(SendTo.Server, InvokePermission = RpcInvokePermission.Everyone)]
-    public void PlaceBombServerRpc(Vector3 position, RpcParams rpcParams = default)
+    public void PlaceBombServerRpc(Vector3 position, uint prefabUID, RpcParams rpcParams = default)
     {
-        var hits = Physics.OverlapBox(position, new Vector3(0.5f, 0.5f, 0.5f));
+        var bombPrefabGO = NetworkManager.Singleton.NetworkConfig.Prefabs.Prefabs
+            .First(p => p.SourcePrefabGlobalObjectIdHash == prefabUID).Prefab;
+        var renderer = bombPrefabGO.GetComponentInChildren<Renderer>();
+        Vector3 size = renderer.bounds.size; 
+            
+        var hits = Physics.OverlapBox(position, size/2);
         if (hits.Length > 0) return;
         // todo validate position further - distance from player on server side
-        
-        var go = Instantiate(bombPrefab, position, Quaternion.identity);
+
+
+        var go = Instantiate(bombPrefabGO, position, Quaternion.identity);
         var no = go.GetComponent<NetworkObject>();
         no.Spawn(true);
         
