@@ -1,6 +1,7 @@
 using DefaultNamespace;
 using State;
 using Unity.Netcode;
+using UnityEngine;
 
 namespace BombComponents.Fuse
 {
@@ -8,6 +9,7 @@ namespace BombComponents.Fuse
     {
         private GameStateManager _gs;
         ulong _ownerPlayerUid;
+        private float _activationTimer = 2f;
 
         private void Start()
         {
@@ -19,6 +21,13 @@ namespace BombComponents.Fuse
         private void Update()
         {
             if (!IsServer) return;
+
+            if (_activationTimer > 0)
+            {
+                _activationTimer -= Time.deltaTime;
+                return;
+            }
+
             var fuzeTile = GridUtils.WorldToGrid(transform.position);
 
 
